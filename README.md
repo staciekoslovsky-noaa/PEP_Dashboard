@@ -1,4 +1,4 @@
-# PEP_Dashboard
+# PEP Dashboard
 
 Welcome to the PEP Dashboard!
 
@@ -11,6 +11,7 @@ The power in this database comes from the information being populated and update
 A few things to help you get started:
 * Use the links on the right to navigate to different sections of the documentation. 
 * Please use the "Issues" page for ideas or suggestions of things that would be useful within the database.
+* Pleass reference the "Wiki" page for more information about the database.
 * If there's a catastrophic issue, please email or chat Stacie!
 * I recommend adding a "data sharing" milestone activity to appropriate projects to ensure we're meeting PARR requirements and achieving an open data approach within the program.
 
