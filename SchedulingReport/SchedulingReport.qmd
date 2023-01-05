@@ -1,0 +1,68 @@
+---
+title: "PEP Scheduling"
+format: html
+editor: visual
+---
+This report was generated on `r Sys.Date()`. 
+
+## Introduction
+The figures in this document represent the upcoming work for PEP staff over the next 60 days. The intent of this information is to help support cross-project planning and communication
+
+## Planned Work by Action Lead
+NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(RPostgreSQL)
+library(ggplot2)
+library(scales)
+
+# Connect to DB and get starting data
+con <- RPostgreSQL::dbConnect(PostgreSQL(), 
+                              dbname = Sys.getenv("pep_db"), 
+                              host = Sys.getenv("pep_ip"), 
+                              user = Sys.getenv("pep_user"), 
+                              password =  Sys.getenv("user_pw"))
+
+planning <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling
+                                    WHERE (planned_end_date <= (now() + \'60 days\'::interval)
+                                    OR (planned_start_date <= now() AND planned_end_date >= now()))
+                                    AND activity_lead IS NOT NULL") %>%
+  mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
+         adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 60, Sys.Date() + 60, 
+                                       ifelse(planned_end_date < Sys.Date(), Sys.Date() + 60, planned_end_date)), origin = '1970-01-01'),
+         ylab = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 40))
+
+staff <- unique(planning$activity_lead)
+```
+
+```{r figures, results = 'all', fig.height = 7, fig.width = 10}
+# Figure 1
+for (i in 1:length(staff)) {
+  figure_planning <- planning %>%
+    filter(activity_lead == staff[i]) %>%
+    mutate(ylab = factor(ylab, levels = rev(sort(ylab))))
+  
+  p <- ggplot(figure_planning, aes(x = adjusted_start, xend = adjusted_end, 
+                     y = ylab, yend = ylab, 
+                     color = activity_status)) +
+    geom_segment(size = 5) +
+    scale_color_manual(values = c("Not yet started" = "darkslategray",
+                                "Awaiting dependency" = "darkgoldenrod2",
+                                "In progress" = "chartreuse4")) + 
+    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 60),
+                 date_labels = "%Y-%m-%d", 
+                 date_breaks ="1 month") + 
+    labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
+         x = "Date",
+         y = "Action",
+         color = "Action Status") +
+    theme(panel.grid.minor = element_blank()) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  
+  print(p)  
+}
+
+```
