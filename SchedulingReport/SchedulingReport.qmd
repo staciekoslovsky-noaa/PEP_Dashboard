@@ -3,12 +3,15 @@ title: "PEP Scheduling"
 format: html
 editor: visual
 ---
-This report was generated on `r Sys.Date()`. 
+
+This report was generated on `r Sys.Date()`.
 
 ## Introduction
+
 The figures in this document represent the upcoming work for PEP staff over the next 60 days. The intent of this information is to help support cross-project planning and communication
 
 ## Planned Work by Action Lead
+
 NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
 
 ```{r setup, include = FALSE}
@@ -23,8 +26,8 @@ library(scales)
 con <- RPostgreSQL::dbConnect(PostgreSQL(), 
                               dbname = Sys.getenv("pep_db"), 
                               host = Sys.getenv("pep_ip"), 
-                              user = Sys.getenv("pep_user"), 
-                              password =  Sys.getenv("user_pw"))
+                              user = Sys.getenv("pep_admin"), 
+                              password =  Sys.getenv("admin_pw"))
 
 planning <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling
                                     WHERE (planned_end_date <= (now() + \'60 days\'::interval)
