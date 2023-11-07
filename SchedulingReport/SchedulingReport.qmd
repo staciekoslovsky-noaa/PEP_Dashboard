@@ -36,26 +36,32 @@ planning <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4sch
   mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
          adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 60, Sys.Date() + 60, 
                                        ifelse(planned_end_date < Sys.Date(), Sys.Date() + 60, planned_end_date)), origin = '1970-01-01'),
-         ylab = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 40))
+         ylab_staff = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 40),
+         ylab_project = str_wrap(paste0(activity_plan_nickname,": ", activity_name, " (", activity_lead, ")"), width = 40))
 
 staff <- unique(planning$activity_lead)
+activityPlan <- planning %>%
+  arrange(activity_plan_nickname) %>% 
+  select(activity_plan_nickname) %>%
+  unique()
+  
 ```
 
-```{r figures, results = 'all', fig.height = 7, fig.width = 10}
+```{r figures_byStaff, results = 'all', fig.height = 7, fig.width = 10}
 # Figure 1
 for (i in 1:length(staff)) {
-  figure_planning <- planning %>%
+  figure_staff <- planning %>%
     filter(activity_lead == staff[i]) %>%
-    mutate(ylab = factor(ylab, levels = rev(sort(ylab))))
+    mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff))))
   
-  p <- ggplot(figure_planning, aes(x = adjusted_start, xend = adjusted_end, 
+  fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
                      y = ylab, yend = ylab, 
                      color = activity_status)) +
     geom_segment(size = 5) +
     scale_color_manual(values = c("Not yet started" = "darkslategray",
                                 "Awaiting dependency" = "darkgoldenrod2",
                                 "In progress" = "chartreuse4")) + 
-    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 60),
+    scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 180),
                  date_labels = "%Y-%m-%d", 
                  date_breaks ="1 month") + 
     labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
@@ -65,7 +71,60 @@ for (i in 1:length(staff)) {
     theme(panel.grid.minor = element_blank()) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
   
-  print(p)  
+  print(fig)  
+}
+```
+
+```{r figures_byProject, results = 'all', fig.height = 7, fig.width = 10}
+# Figure 2
+for (a in 1:nrow(activityPlan)) {
+  print(activityPlan$activity_plan_nickname[a]) 
+  
+  component <- planning %>%
+    filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+    select(component_name) %>%
+    arrange(component_name) %>%
+    unique() 
+  
+  for (c in 1:nrow(component)) {
+    print(component$component_name[c])
+    
+    project <- planning %>% 
+      filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+      filter(component_name == component$component_name[c]) %>% 
+      select(project_name) %>%
+      arrange(project_name) %>%
+      unique()
+    
+    for (p in 1:nrow(project)) {
+      figure_project <- planning %>% 
+        filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+        filter(component_name == component$component_name[c]) %>% 
+        filter(project_name == project$project_name[p]) %>% 
+        mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project))))
+      
+      fig <- ggplot(figure_project, aes(x = adjusted_start, xend = adjusted_end,
+                                       y = ylab, yend = ylab, 
+                                       color = activity_status,
+                                       label = activity_lead)) +
+        geom_segment(size = 5) +
+        #geom_label(hjust = 0) +
+        scale_color_manual(values = c("Not yet started" = "darkslategray",
+                            "Awaiting dependency" = "darkgoldenrod2",
+                            "In progress" = "chartreuse4")) +
+        scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 180),
+             date_labels = "%Y-%m-%d", 
+             date_breaks ="1 month") + 
+        labs(title = project$project_name[p],
+             x = "Date",
+             y = "Action",
+             color = "Action Status") +
+        theme(panel.grid.minor = element_blank()) +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+      
+      print(fig)
+    }
+  }
 }
 
 ```
