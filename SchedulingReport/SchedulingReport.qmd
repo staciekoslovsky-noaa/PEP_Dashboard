@@ -4,16 +4,6 @@ format: html
 editor: visual
 ---
 
-This report was generated on `r Sys.Date()`.
-
-## Introduction
-
-The figures in this document represent the upcoming work for PEP staff over the next 60 days. The intent of this information is to help support cross-project planning and communication
-
-## Planned Work by Action Lead
-
-NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
@@ -29,15 +19,27 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
                               user = Sys.getenv("pep_admin"), 
                               password =  Sys.getenv("admin_pw"))
 
-planning <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling
-                                    WHERE (planned_end_date <= (now() + \'60 days\'::interval)
-                                    OR (planned_start_date <= now() AND planned_end_date >= now()))
-                                    AND activity_lead IS NOT NULL") %>%
+work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
+                                    # WHERE (planned_end_date <= (now() + \'60 days\'::interval)
+                                    # OR (planned_start_date <= now() AND planned_end_date >= now()))
+
+RPostgreSQL::dbDisconnect(con)
+
+overdue <- work %>%
+  filter(planned_end_date <= Sys.Date()) %>%
+  select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
+  rename("Activity Plan" = activity_plan_nickname,
+         "Action" = activity_name,
+         "Lead" = activity_lead,
+         "Planned End Date" = planned_end_date)
+
+planning <- work %>%
+  filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
   mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
-         adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 60, Sys.Date() + 60, 
-                                       ifelse(planned_end_date < Sys.Date(), Sys.Date() + 60, planned_end_date)), origin = '1970-01-01'),
+         adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
          ylab_staff = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 40),
-         ylab_project = str_wrap(paste0(activity_plan_nickname,": ", activity_name, " (", activity_lead, ")"), width = 40))
+         ylab_project = str_wrap(paste0(activity_plan_nickname,": ", activity_name, " (", activity_lead, ")"), width = 40)) 
+           
 
 staff <- unique(planning$activity_lead)
 activityPlan <- planning %>%
@@ -46,6 +48,25 @@ activityPlan <- planning %>%
   unique()
   
 ```
+
+
+This report was generated on `r Sys.Date()`.
+
+## Introduction
+
+The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
+
+## Overdue Work
+The following table lists the actions that are overdue in the DB. 
+
+```{r overdue_work}
+knitr::kable(overdue, format = "html")
+```
+
+## Planned Work by Action Lead
+
+NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
+
 
 ```{r figures_byStaff, results = 'all', fig.height = 7, fig.width = 10}
 # Figure 1
@@ -61,7 +82,7 @@ for (i in 1:length(staff)) {
     scale_color_manual(values = c("Not yet started" = "darkslategray",
                                 "Awaiting dependency" = "darkgoldenrod2",
                                 "In progress" = "chartreuse4")) + 
-    scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 180),
+    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 180),
                  date_labels = "%Y-%m-%d", 
                  date_breaks ="1 month") + 
     labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
@@ -101,7 +122,8 @@ for (a in 1:nrow(activityPlan)) {
         filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
         filter(component_name == component$component_name[c]) %>% 
         filter(project_name == project$project_name[p]) %>% 
-        mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project))))
+        mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project)))) %>%
+        arrange(adjusted_start, adjusted_end, activity_name)
       
       fig <- ggplot(figure_project, aes(x = adjusted_start, xend = adjusted_end,
                                        y = ylab, yend = ylab, 
