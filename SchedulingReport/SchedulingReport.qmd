@@ -49,7 +49,6 @@ activityPlan <- planning %>%
   
 ```
 
-
 This report was generated on `r Sys.Date()`.
 
 ## Introduction
@@ -57,7 +56,8 @@ This report was generated on `r Sys.Date()`.
 The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
 
 ## Overdue Work
-The following table lists the actions that are overdue in the DB. 
+
+The following table lists the actions that are overdue in the DB.
 
 ```{r overdue_work}
 knitr::kable(overdue, format = "html")
@@ -66,7 +66,6 @@ knitr::kable(overdue, format = "html")
 ## Planned Work by Action Lead
 
 NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
-
 
 ```{r figures_byStaff, results = 'all', fig.height = 7, fig.width = 10}
 # Figure 1
