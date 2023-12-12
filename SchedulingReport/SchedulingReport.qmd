@@ -11,6 +11,7 @@ library(tidyverse)
 library(RPostgreSQL)
 library(ggplot2)
 library(scales)
+library(ggpattern)
 
 # Connect to DB and get starting data
 con <- RPostgreSQL::dbConnect(PostgreSQL(), 
@@ -65,9 +66,9 @@ knitr::kable(overdue, format = "html")
 
 ## Planned Work by Action Lead
 
-NOTE: For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated.
+For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
 
-```{r figures_byStaff, results = 'all', fig.height = 7, fig.width = 10}
+```{r figures_byStaff, results = 'all', fig.width = 10}
 # Figure 1
 for (i in 1:length(staff)) {
   figure_staff <- planning %>%
@@ -76,24 +77,54 @@ for (i in 1:length(staff)) {
   
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
                      y = ylab, yend = ylab, 
-                     color = activity_status)) +
+                     color = activity_type,
+                     pattern = activity_status)) +
+    geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", size = 1.5) +
     geom_segment(size = 5) +
-    scale_color_manual(values = c("Not yet started" = "darkslategray",
-                                "Awaiting dependency" = "darkgoldenrod2",
-                                "In progress" = "chartreuse4")) + 
-    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 180),
+    #geom_bar_pattern(p)
+    
+    # scale_color_manual(values = c("Not yet started" = "darkslategray",
+    #                             "Awaiting dependency" = "darkgoldenrod2",
+    #                             "In progress" = "chartreuse4")) + 
+    scale_color_manual(values = c("Milestone" = "cadetblue",
+                                "Prep/Planning" = "darkolivegreen2",
+                                "Development" = "darkolivegreen4",
+                                "Fieldwork/Travel" = "darkgoldenrod2",
+                                "Dataset" = "chocolate1",
+                                "Analysis" = "chocolate3",
+                                "Report/Manuscript" = "chocolate4",
+                                "Other" = "darkslategray")) + 
+    scale_fill_discrete(limits=c("Milestone",
+                                "Prep/Planning",
+                                "Development",
+                                "Fieldwork/Travel",
+                                "Dataset",
+                                "Analysis",
+                                "Report/Manuscript",
+                                "Other")) +
+    scale_pattern_manual(name = "Status",
+                         values = c(
+                           "In progress" = "none",
+                           "Awaiting dependency" = "wave", 
+                           "Not yet started" = "stripe")) +
+    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 150),
                  date_labels = "%Y-%m-%d", 
                  date_breaks ="1 month") + 
     labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
          x = "Date",
          y = "Action",
-         color = "Action Status") +
+         color = "Action Type",
+         pattern = "Status") +
     theme(panel.grid.minor = element_blank()) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
   
   print(fig)  
 }
 ```
+
+## Planned Work by Project
+
+For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
 
 ```{r figures_byProject, results = 'all', fig.height = 7, fig.width = 10}
 # Figure 2
@@ -129,11 +160,11 @@ for (a in 1:nrow(activityPlan)) {
                                        color = activity_status,
                                        label = activity_lead)) +
         geom_segment(size = 5) +
-        #geom_label(hjust = 0) +
+        geom_vline(aes(xintercept = Sys.Date()), col = "black", size = 1.5) +
         scale_color_manual(values = c("Not yet started" = "darkslategray",
                             "Awaiting dependency" = "darkgoldenrod2",
                             "In progress" = "chartreuse4")) +
-        scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 180),
+        scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 150),
              date_labels = "%Y-%m-%d", 
              date_breaks ="1 month") + 
         labs(title = project$project_name[p],
