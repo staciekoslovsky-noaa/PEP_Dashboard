@@ -29,18 +29,93 @@ ul.task-list li input[type="checkbox"] {
 <script src="SchedulingReport_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="SchedulingReport_files/libs/quarto-html/anchor.min.js"></script>
 <link href="SchedulingReport_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="SchedulingReport_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="SchedulingReport_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="SchedulingReport_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="SchedulingReport_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="SchedulingReport_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="SchedulingReport_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#overdue-work" id="toc-overdue-work" class="nav-link" data-scroll-target="#overdue-work">Overdue Work</a></li>
+  <li><a href="#planned-work-by-action-lead" id="toc-planned-work-by-action-lead" class="nav-link" data-scroll-target="#planned-work-by-action-lead">Planned Work by Action Lead</a>
+  <ul class="collapse">
+  <li><a href="#boveng" id="toc-boveng" class="nav-link" data-scroll-target="#boveng">Boveng</a></li>
+  <li><a href="#brady" id="toc-brady" class="nav-link" data-scroll-target="#brady">Brady</a></li>
+  <li><a href="#cameron" id="toc-cameron" class="nav-link" data-scroll-target="#cameron">Cameron</a></li>
+  <li><a href="#christman" id="toc-christman" class="nav-link" data-scroll-target="#christman">Christman</a></li>
+  <li><a href="#conn" id="toc-conn" class="nav-link" data-scroll-target="#conn">Conn</a></li>
+  <li><a href="#dahle" id="toc-dahle" class="nav-link" data-scroll-target="#dahle">Dahle</a></li>
+  <li><a href="#jansen" id="toc-jansen" class="nav-link" data-scroll-target="#jansen">Jansen</a></li>
+  <li><a href="#koslovsky" id="toc-koslovsky" class="nav-link" data-scroll-target="#koslovsky">Koslovsky</a></li>
+  <li><a href="#lindsay" id="toc-lindsay" class="nav-link" data-scroll-target="#lindsay">Lindsay</a></li>
+  <li><a href="#london" id="toc-london" class="nav-link" data-scroll-target="#london">London</a></li>
+  <li><a href="#mcclintock" id="toc-mcclintock" class="nav-link" data-scroll-target="#mcclintock">McClintock</a></li>
+  <li><a href="#moreland" id="toc-moreland" class="nav-link" data-scroll-target="#moreland">Moreland</a></li>
+  <li><a href="#richmond" id="toc-richmond" class="nav-link" data-scroll-target="#richmond">Richmond</a></li>
+  <li><a href="#verhoef" id="toc-verhoef" class="nav-link" data-scroll-target="#verhoef">VerHoef</a></li>
+  <li><a href="#walcott" id="toc-walcott" class="nav-link" data-scroll-target="#walcott">Walcott</a></li>
+  <li><a href="#ziel" id="toc-ziel" class="nav-link" data-scroll-target="#ziel">Ziel</a></li>
+  </ul></li>
+  <li><a href="#planned-work-by-project" id="toc-planned-work-by-project" class="nav-link" data-scroll-target="#planned-work-by-project">Planned Work by Project</a>
+  <ul class="collapse">
+  <li><a href="#diet-and-physiology-ap-350" id="toc-diet-and-physiology-ap-350" class="nav-link" data-scroll-target="#diet-and-physiology-ap-350">Diet and physiology (AP 350)</a>
+  <ul class="collapse">
+  <li><a href="#collaborate-with-partners-on-analyses-of-samples-collected-in-the-field-c10" id="toc-collaborate-with-partners-on-analyses-of-samples-collected-in-the-field-c10" class="nav-link" data-scroll-target="#collaborate-with-partners-on-analyses-of-samples-collected-in-the-field-c10">Collaborate with partners on analyses of samples collected in the field (C10)</a></li>
+  </ul></li>
+  <li><a href="#harbor-seals-ap-342" id="toc-harbor-seals-ap-342" class="nav-link" data-scroll-target="#harbor-seals-ap-342">Harbor seals (AP 342)</a>
+  <ul class="collapse">
+  <li><a href="#abundance-and-trend-analysis-for-harbor-seal-stocks-c3" id="toc-abundance-and-trend-analysis-for-harbor-seal-stocks-c3" class="nav-link" data-scroll-target="#abundance-and-trend-analysis-for-harbor-seal-stocks-c3">Abundance and trend analysis for harbor seal stocks (C3)</a></li>
+  <li><a href="#aleutian-islands-harbor-seal-ecology-c2" id="toc-aleutian-islands-harbor-seal-ecology-c2" class="nav-link" data-scroll-target="#aleutian-islands-harbor-seal-ecology-c2">Aleutian Islands harbor seal ecology (C2)</a></li>
+  <li><a href="#harbor-seal-reporting-c17" id="toc-harbor-seal-reporting-c17" class="nav-link" data-scroll-target="#harbor-seal-reporting-c17">Harbor seal reporting (C17)</a></li>
+  <li><a href="#scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-harbor-seals-c6" id="toc-scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-harbor-seals-c6" class="nav-link" data-scroll-target="#scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-harbor-seals-c6">Scientific assessment and support to stakeholders for management and co-management of Alaskan harbor seals (C6)</a></li>
+  <li><a href="#vessel-disturbance-of-glacial-harbor-seals-c5" id="toc-vessel-disturbance-of-glacial-harbor-seals-c5" class="nav-link" data-scroll-target="#vessel-disturbance-of-glacial-harbor-seals-c5">Vessel disturbance of glacial harbor seals (C5)</a></li>
+  </ul></li>
+  <li><a href="#ice-seals-ap-346" id="toc-ice-seals-ap-346" class="nav-link" data-scroll-target="#ice-seals-ap-346">Ice seals (AP 346)</a>
+  <ul class="collapse">
+  <li><a href="#aerial-surveys-of-harbor-seals-in-alaska-c1" id="toc-aerial-surveys-of-harbor-seals-in-alaska-c1" class="nav-link" data-scroll-target="#aerial-surveys-of-harbor-seals-in-alaska-c1">Aerial surveys of harbor seals in Alaska (C1)</a></li>
+  <li><a href="#aerial-surveys-of-ice-seals-and-polar-bears-c7" id="toc-aerial-surveys-of-ice-seals-and-polar-bears-c7" class="nav-link" data-scroll-target="#aerial-surveys-of-ice-seals-and-polar-bears-c7">Aerial surveys of ice seals and polar bears (C7)</a></li>
+  <li><a href="#scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-ice-seals-c9" id="toc-scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-ice-seals-c9" class="nav-link" data-scroll-target="#scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-ice-seals-c9">Scientific assessment and support to stakeholders for management and co-management of Alaskan ice seals (C9)</a></li>
+  <li><a href="#vessel-based-tagging-and-sampling-for-haul-out-health-condition-diet-c8" id="toc-vessel-based-tagging-and-sampling-for-haul-out-health-condition-diet-c8" class="nav-link" data-scroll-target="#vessel-based-tagging-and-sampling-for-haul-out-health-condition-diet-c8">Vessel-based tagging and sampling for haul-out, health, condition, diet (C8)</a></li>
+  </ul></li>
+  <li><a href="#other-ap-999" id="toc-other-ap-999" class="nav-link" data-scroll-target="#other-ap-999">Other (AP 999)</a>
+  <ul class="collapse">
+  <li><a href="#modernizing-mml-stock-assessment-workflows-c26" id="toc-modernizing-mml-stock-assessment-workflows-c26" class="nav-link" data-scroll-target="#modernizing-mml-stock-assessment-workflows-c26">Modernizing MML stock assessment workflows (C26)</a></li>
+  <li><a href="#open-sciencesoftware-c25" id="toc-open-sciencesoftware-c25" class="nav-link" data-scroll-target="#open-sciencesoftware-c25">Open science/software (C25)</a></li>
+  <li><a href="#optics-strategic-initiative-c23" id="toc-optics-strategic-initiative-c23" class="nav-link" data-scroll-target="#optics-strategic-initiative-c23">Optics Strategic Initiative (C23)</a></li>
+  <li><a href="#program-data-management-c15" id="toc-program-data-management-c15" class="nav-link" data-scroll-target="#program-data-management-c15">Program data management (C15)</a></li>
+  <li><a href="#walcott-work-for-aep-c22" id="toc-walcott-work-for-aep-c22" class="nav-link" data-scroll-target="#walcott-work-for-aep-c22">Walcott work for AEP (C22)</a></li>
+  </ul></li>
+  <li><a href="#toolbox-ap-354" id="toc-toolbox-ap-354" class="nav-link" data-scroll-target="#toolbox-ap-354">Toolbox (AP 354)</a>
+  <ul class="collapse">
+  <li><a href="#integrating-diverse-data-sources-to-determine-seasonal-density-distributions-of-protected-species-c12" id="toc-integrating-diverse-data-sources-to-determine-seasonal-density-distributions-of-protected-species-c12" class="nav-link" data-scroll-target="#integrating-diverse-data-sources-to-determine-seasonal-density-distributions-of-protected-species-c12">Integrating diverse data sources to determine seasonal density distributions of protected species (C12)</a></li>
+  </ul></li>
+  <li><a href="#trophic-roles-ap-357" id="toc-trophic-roles-ap-357" class="nav-link" data-scroll-target="#trophic-roles-ap-357">Trophic roles (AP 357)</a>
+  <ul class="collapse">
+  <li><a href="#analysis-for-trophic-roles-of-ice-seals-rwp-project-c11" id="toc-analysis-for-trophic-roles-of-ice-seals-rwp-project-c11" class="nav-link" data-scroll-target="#analysis-for-trophic-roles-of-ice-seals-rwp-project-c11">Analysis for Trophic Roles of Ice Seals RWP project (C11)</a></li>
+  <li><a href="#integrating-seal-energy-requirements-and-diet-composition-c21" id="toc-integrating-seal-energy-requirements-and-diet-composition-c21" class="nav-link" data-scroll-target="#integrating-seal-energy-requirements-and-diet-composition-c21">Integrating seal energy requirements and diet composition (C21)</a></li>
+  </ul></li>
+  <li><a href="#uas-body-condition-ap-356" id="toc-uas-body-condition-ap-356" class="nav-link" data-scroll-target="#uas-body-condition-ap-356">UAS body condition (AP 356)</a>
+  <ul class="collapse">
+  <li><a href="#phase-iii-uas-field-testsdata-collection-and-analysisreporting-c14" id="toc-phase-iii-uas-field-testsdata-collection-and-analysisreporting-c14" class="nav-link" data-scroll-target="#phase-iii-uas-field-testsdata-collection-and-analysisreporting-c14">Phase III: UAS field tests/data collection and analysis/reporting (C14)</a></li>
+  </ul></li>
+  <li><a href="#uspai-ap-355" id="toc-uspai-ap-355" class="nav-link" data-scroll-target="#uspai-ap-355">USPAI (AP 355)</a>
+  <ul class="collapse">
+  <li><a href="#uncrewed-surveys-of-pinnipeds-in-the-aleutian-islands-c13" id="toc-uncrewed-surveys-of-pinnipeds-in-the-aleutian-islands-c13" class="nav-link" data-scroll-target="#uncrewed-surveys-of-pinnipeds-in-the-aleutian-islands-c13">Uncrewed Surveys of Pinnipeds in the Aleutian Islands (C13)</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -60,13 +135,13 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>This report was generated on 2023-12-12.</p>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This report was generated on 2023-12-18.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
 <p>The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.</p>
 </section>
-<section id="overdue-work" class="level2">
-<h2 class="anchored" data-anchor-id="overdue-work">Overdue Work</h2>
+<section id="overdue-work" class="level1">
+<h1>Overdue Work</h1>
 <p>The following table lists the actions that are overdue in the DB.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -82,46 +157,82 @@ ul.task-list li input[type="checkbox"] {
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> Ice seals </td>
-   <td style="text-align:left;"> Respond to AKRO review comments </td>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Circulate revised outline/draft to primary co-authors (A67) </td>
    <td style="text-align:left;"> Boveng </td>
    <td style="text-align:left;"> 2023-12-07 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Harbor seals </td>
-   <td style="text-align:left;"> Circulate revised outline/draft to primary co-authors </td>
+   <td style="text-align:left;"> Ice seals (AP 346) </td>
+   <td style="text-align:left;"> Respond to AKRO review comments (A715) </td>
    <td style="text-align:left;"> Boveng </td>
    <td style="text-align:left;"> 2023-12-07 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> USPAI </td>
-   <td style="text-align:left;"> Draft and present bi-annual progress briefings with UxSOC </td>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Send report to co-authors for review (A747) </td>
+   <td style="text-align:left;"> Christman </td>
+   <td style="text-align:left;"> 2023-12-15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> USPAI (AP 355) </td>
+   <td style="text-align:left;"> Draft and present bi-annual progress briefings with UxSOC (A374) </td>
    <td style="text-align:left;"> Dahle </td>
    <td style="text-align:left;"> 2023-12-06 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Other </td>
-   <td style="text-align:left;"> draft SOP submitted to AFSC leadership for review and approval </td>
+   <td style="text-align:left;"> USPAI (AP 355) </td>
+   <td style="text-align:left;"> Draft a PEP field report for the Sept 2023 deployment to Shemya (A519) </td>
+   <td style="text-align:left;"> Dahle </td>
+   <td style="text-align:left;"> 2023-12-15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Ice seals (AP 346) </td>
+   <td style="text-align:left;"> Revise ringed seal haul-out ms and share with co-authors (round 1) (A635) </td>
+   <td style="text-align:left;"> Lindsay </td>
+   <td style="text-align:left;"> 2023-12-18 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Other (AP 999) </td>
+   <td style="text-align:left;"> draft SOP submitted to AFSC leadership for review and approval (A736) </td>
    <td style="text-align:left;"> London </td>
    <td style="text-align:left;"> 2023-12-08 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Harbor seals </td>
-   <td style="text-align:left;"> Explore alternative approaches for assessment and long-term monitoring </td>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Explore alternative approaches for assessment and long-term monitoring (A478) </td>
    <td style="text-align:left;"> McClintock </td>
    <td style="text-align:left;"> 2023-11-17 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Harbor seals </td>
-   <td style="text-align:left;"> Document package/R functions and write vignette(s) </td>
+   <td style="text-align:left;"> USPAI (AP 355) </td>
+   <td style="text-align:left;"> Coordinate camera servicing (A567) </td>
+   <td style="text-align:left;"> Moreland </td>
+   <td style="text-align:left;"> 2023-12-15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Ice seals (AP 346) </td>
+   <td style="text-align:left;"> Coordinate with Iliamna indigenous-led environmental monitoring program (A584) </td>
+   <td style="text-align:left;"> Richmond </td>
+   <td style="text-align:left;"> 2023-12-15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Document package/R functions and write vignette(s) (A422) </td>
    <td style="text-align:left;"> VerHoef </td>
    <td style="text-align:left;"> 2023-11-17 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Harbor seals </td>
-   <td style="text-align:left;"> Knowledge transfer re: current assessment framework and statistical model </td>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Knowledge transfer re: current assessment framework and statistical model (A421) </td>
    <td style="text-align:left;"> VerHoef </td>
    <td style="text-align:left;"> 2023-11-17 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Harbor seals (AP 342) </td>
+   <td style="text-align:left;"> Calculate estimates of abundance and trend by stock; provide results to co-authors (A420) </td>
+   <td style="text-align:left;"> VerHoef </td>
+   <td style="text-align:left;"> 2023-12-13 </td>
   </tr>
 </tbody>
 </table>
@@ -129,68 +240,113 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </section>
-<section id="planned-work-by-action-lead" class="level2">
-<h2 class="anchored" data-anchor-id="planned-work-by-action-lead">Planned Work by Action Lead</h2>
+<section id="planned-work-by-action-lead" class="level1">
+<h1>Planned Work by Action Lead</h1>
 <p>For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today’s date is shown as a grey vertical line on the figure.</p>
-<div class="cell">
+<section id="boveng" class="level2">
+<h2 class="anchored" data-anchor-id="boveng">Boveng</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-1.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="brady" class="level2">
+<h2 class="anchored" data-anchor-id="brady">Brady</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-2.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="cameron" class="level2">
+<h2 class="anchored" data-anchor-id="cameron">Cameron</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-3.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="christman" class="level2">
+<h2 class="anchored" data-anchor-id="christman">Christman</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-4.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="conn" class="level2">
+<h2 class="anchored" data-anchor-id="conn">Conn</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-5.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="dahle" class="level2">
+<h2 class="anchored" data-anchor-id="dahle">Dahle</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-6.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="jansen" class="level2">
+<h2 class="anchored" data-anchor-id="jansen">Jansen</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-7.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="koslovsky" class="level2">
+<h2 class="anchored" data-anchor-id="koslovsky">Koslovsky</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-8.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="lindsay" class="level2">
+<h2 class="anchored" data-anchor-id="lindsay">Lindsay</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-9.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="london" class="level2">
+<h2 class="anchored" data-anchor-id="london">London</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-10.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="mcclintock" class="level2">
+<h2 class="anchored" data-anchor-id="mcclintock">McClintock</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-11.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="moreland" class="level2">
+<h2 class="anchored" data-anchor-id="moreland">Moreland</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-12.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="richmond" class="level2">
+<h2 class="anchored" data-anchor-id="richmond">Richmond</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-13.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="verhoef" class="level2">
+<h2 class="anchored" data-anchor-id="verhoef">VerHoef</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-14.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="walcott" class="level2">
+<h2 class="anchored" data-anchor-id="walcott">Walcott</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-15.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="ziel" class="level2">
+<h2 class="anchored" data-anchor-id="ziel">Ziel</h2>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byStaff-16.png" class="img-fluid" width="960"></p>
 </div>
-</div>
 </section>
-<section id="planned-work-by-project" class="level2">
-<h2 class="anchored" data-anchor-id="planned-work-by-project">Planned Work by Project</h2>
+</section>
+<section id="planned-work-by-project" class="level1">
+<h1>Planned Work by Project</h1>
 <p>For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today’s date is shown as a grey vertical line on the figure.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Diet and physiology"
-[1] "Collaborate with partners on analyses of samples collected in the field"</code></pre>
-</div>
+<section id="diet-and-physiology-ap-350" class="level2">
+<h2 class="anchored" data-anchor-id="diet-and-physiology-ap-350">Diet and physiology (AP 350)</h2>
+<section id="collaborate-with-partners-on-analyses-of-samples-collected-in-the-field-c10" class="level3">
+<h3 class="anchored" data-anchor-id="collaborate-with-partners-on-analyses-of-samples-collected-in-the-field-c10">Collaborate with partners on analyses of samples collected in the field (C10)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-1.png" class="img-fluid" width="960"></p>
 </div>
@@ -203,10 +359,12 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-4.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Harbor seals"
-[1] "Abundance and trend analysis for harbor seal stocks"</code></pre>
-</div>
+</section>
+</section>
+<section id="harbor-seals-ap-342" class="level2">
+<h2 class="anchored" data-anchor-id="harbor-seals-ap-342">Harbor seals (AP 342)</h2>
+<section id="abundance-and-trend-analysis-for-harbor-seal-stocks-c3" class="level3">
+<h3 class="anchored" data-anchor-id="abundance-and-trend-analysis-for-harbor-seal-stocks-c3">Abundance and trend analysis for harbor seal stocks (C3)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-5.png" class="img-fluid" width="960"></p>
 </div>
@@ -219,15 +377,18 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-8.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="aleutian-islands-harbor-seal-ecology-c2" class="level3">
+<h3 class="anchored" data-anchor-id="aleutian-islands-harbor-seal-ecology-c2">Aleutian Islands harbor seal ecology (C2)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-9.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Aerial surveys of harbor seals in Alaska"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-10.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="harbor-seal-reporting-c17" class="level3">
+<h3 class="anchored" data-anchor-id="harbor-seal-reporting-c17">Harbor seal reporting (C17)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-11.png" class="img-fluid" width="960"></p>
 </div>
@@ -243,6 +404,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-15.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-harbor-seals-c6" class="level3">
+<h3 class="anchored" data-anchor-id="scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-harbor-seals-c6">Scientific assessment and support to stakeholders for management and co-management of Alaskan harbor seals (C6)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-16.png" class="img-fluid" width="960"></p>
 </div>
@@ -252,21 +416,24 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-18.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Aleutian Islands harbor seal ecology"</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-19.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="vessel-disturbance-of-glacial-harbor-seals-c5" class="level3">
+<h3 class="anchored" data-anchor-id="vessel-disturbance-of-glacial-harbor-seals-c5">Vessel disturbance of glacial harbor seals (C5)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-20.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Harbor seal reporting"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-21.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+</section>
+<section id="ice-seals-ap-346" class="level2">
+<h2 class="anchored" data-anchor-id="ice-seals-ap-346">Ice seals (AP 346)</h2>
+<section id="aerial-surveys-of-harbor-seals-in-alaska-c1" class="level3">
+<h3 class="anchored" data-anchor-id="aerial-surveys-of-harbor-seals-in-alaska-c1">Aerial surveys of harbor seals in Alaska (C1)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-22.png" class="img-fluid" width="960"></p>
 </div>
@@ -278,9 +445,6 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-25.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Scientific assessment and support to stakeholders for management and co-management of Alaskan harbor seals"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-26.png" class="img-fluid" width="960"></p>
@@ -294,18 +458,14 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-29.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Vessel disturbance of glacial harbor seals"</code></pre>
-</div>
+</section>
+<section id="aerial-surveys-of-ice-seals-and-polar-bears-c7" class="level3">
+<h3 class="anchored" data-anchor-id="aerial-surveys-of-ice-seals-and-polar-bears-c7">Aerial surveys of ice seals and polar bears (C7)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-30.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-31.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Ice seals"
-[1] "Aerial surveys of ice seals and polar bears"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-32.png" class="img-fluid" width="960"></p>
@@ -331,14 +491,14 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-39.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-ice-seals-c9" class="level3">
+<h3 class="anchored" data-anchor-id="scientific-assessment-and-support-to-stakeholders-for-management-and-co-management-of-alaskan-ice-seals-c9">Scientific assessment and support to stakeholders for management and co-management of Alaskan ice seals (C9)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-40.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-41.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Scientific assessment and support to stakeholders for management and co-management of Alaskan ice seals"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-42.png" class="img-fluid" width="960"></p>
@@ -370,6 +530,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-51.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="vessel-based-tagging-and-sampling-for-haul-out-health-condition-diet-c8" class="level3">
+<h3 class="anchored" data-anchor-id="vessel-based-tagging-and-sampling-for-haul-out-health-condition-diet-c8">Vessel-based tagging and sampling for haul-out, health, condition, diet (C8)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-52.png" class="img-fluid" width="960"></p>
 </div>
@@ -379,28 +542,30 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-54.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Vessel-based tagging and sampling for haul-out, health, condition, diet"</code></pre>
-</div>
+</section>
+</section>
+<section id="other-ap-999" class="level2">
+<h2 class="anchored" data-anchor-id="other-ap-999">Other (AP 999)</h2>
+<section id="modernizing-mml-stock-assessment-workflows-c26" class="level3">
+<h3 class="anchored" data-anchor-id="modernizing-mml-stock-assessment-workflows-c26">Modernizing MML stock assessment workflows (C26)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-55.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="open-sciencesoftware-c25" class="level3">
+<h3 class="anchored" data-anchor-id="open-sciencesoftware-c25">Open science/software (C25)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-56.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-57.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Other"
-[1] "Modernizing MML stock assessment workflows"</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-58.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Open science/software"</code></pre>
-</div>
+</section>
+<section id="optics-strategic-initiative-c23" class="level3">
+<h3 class="anchored" data-anchor-id="optics-strategic-initiative-c23">Optics Strategic Initiative (C23)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-59.png" class="img-fluid" width="960"></p>
 </div>
@@ -410,9 +575,9 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-61.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Optics Strategic Initiative"</code></pre>
-</div>
+</section>
+<section id="program-data-management-c15" class="level3">
+<h3 class="anchored" data-anchor-id="program-data-management-c15">Program data management (C15)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-62.png" class="img-fluid" width="960"></p>
 </div>
@@ -422,52 +587,59 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-64.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Program data management"</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-65.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="walcott-work-for-aep-c22" class="level3">
+<h3 class="anchored" data-anchor-id="walcott-work-for-aep-c22">Walcott work for AEP (C22)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-66.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+</section>
+<section id="toolbox-ap-354" class="level2">
+<h2 class="anchored" data-anchor-id="toolbox-ap-354">Toolbox (AP 354)</h2>
+<section id="integrating-diverse-data-sources-to-determine-seasonal-density-distributions-of-protected-species-c12" class="level3">
+<h3 class="anchored" data-anchor-id="integrating-diverse-data-sources-to-determine-seasonal-density-distributions-of-protected-species-c12">Integrating diverse data sources to determine seasonal density distributions of protected species (C12)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-67.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-68.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Walcott work for AEP"</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-69.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Toolbox"
-[1] "Integrating diverse data sources to determine seasonal density distributions of protected species"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-70.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+</section>
+<section id="trophic-roles-ap-357" class="level2">
+<h2 class="anchored" data-anchor-id="trophic-roles-ap-357">Trophic roles (AP 357)</h2>
+<section id="analysis-for-trophic-roles-of-ice-seals-rwp-project-c11" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-for-trophic-roles-of-ice-seals-rwp-project-c11">Analysis for Trophic Roles of Ice Seals RWP project (C11)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-71.png" class="img-fluid" width="960"></p>
 </div>
+</section>
+<section id="integrating-seal-energy-requirements-and-diet-composition-c21" class="level3">
+<h3 class="anchored" data-anchor-id="integrating-seal-energy-requirements-and-diet-composition-c21">Integrating seal energy requirements and diet composition (C21)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-72.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-73.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Trophic roles"
-[1] "Analysis for Trophic Roles of Ice Seals RWP project"</code></pre>
-</div>
+</section>
+</section>
+<section id="uas-body-condition-ap-356" class="level2">
+<h2 class="anchored" data-anchor-id="uas-body-condition-ap-356">UAS body condition (AP 356)</h2>
+<section id="phase-iii-uas-field-testsdata-collection-and-analysisreporting-c14" class="level3">
+<h3 class="anchored" data-anchor-id="phase-iii-uas-field-testsdata-collection-and-analysisreporting-c14">Phase III: UAS field tests/data collection and analysis/reporting (C14)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-74.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Integrating seal energy requirements and diet composition"</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-75.png" class="img-fluid" width="960"></p>
@@ -475,10 +647,12 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-76.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "UAS body condition"
-[1] "Phase III: UAS field tests/data collection and analysis/reporting"</code></pre>
-</div>
+</section>
+</section>
+<section id="uspai-ap-355" class="level2">
+<h2 class="anchored" data-anchor-id="uspai-ap-355">USPAI (AP 355)</h2>
+<section id="uncrewed-surveys-of-pinnipeds-in-the-aleutian-islands-c13" class="level3">
+<h3 class="anchored" data-anchor-id="uncrewed-surveys-of-pinnipeds-in-the-aleutian-islands-c13">Uncrewed Surveys of Pinnipeds in the Aleutian Islands (C13)</h3>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-77.png" class="img-fluid" width="960"></p>
 </div>
@@ -488,26 +662,14 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-79.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "USPAI"
-[1] "Uncrewed Surveys of Pinnipeds in the Aleutian Islands"</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-80.png" class="img-fluid" width="960"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="SchedulingReport_files/figure-html/figures_byProject-81.png" class="img-fluid" width="960"></p>
 </div>
-<div class="cell-output-display">
-<p><img src="SchedulingReport_files/figure-html/figures_byProject-82.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="SchedulingReport_files/figure-html/figures_byProject-83.png" class="img-fluid" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="SchedulingReport_files/figure-html/figures_byProject-84.png" class="img-fluid" width="960"></p>
-</div>
-</div>
+</section>
+</section>
 </section>
 
 </main>
