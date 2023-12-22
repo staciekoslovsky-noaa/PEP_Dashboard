@@ -14,9 +14,12 @@ A few things to help you get started:
 * Pleass reference the "Wiki" page for more information about the database.
 * If there's a catastrophic issue, please email or chat Stacie!
 * I recommend adding a "data sharing" milestone activity to appropriate projects to ensure we're meeting PARR requirements and achieving an open data approach within the program.
+* Conformity across the hierarchies across work within PEP is not necesssary (with the exception of manuscripts, see Terms below). It is up to the component/project leads identify the appropriate scale for the work being undertaken.
 
 Terms:
 * **Activity Plan**: These are research plans designed and maintained to meet the AFSC planning, prioritization, and budgeting process. The title and area of focus for “core and constant” plans are not likely to change. More ephemeral activity plans may exist to accommodate external funds or special initiative funds that come to PEP.
 * **Component**: These represent key themes and areas of research interest within the parent activity plan. These serve as organizational groupings to help identify areas of collaboration/ coordination and for allocation of key leadership/management responsibilities. Components may exist as long as needed.
-* **Project**: These represent a common unit of team organization, distribution of roles, and allocation of time and energy for PEP personnel, and each project should have a set of identified activities. Distribution of roles is important for each project and timelines should be identified up front (and revisited regularly).
+* **Project**: These represent a common unit of team organization, distribution of roles, and allocation of time and energy for PEP personnel, and each project should have a set of identified activities.
+  * Distribution of roles is important for each project and timelines should be identified up front (and revisited regularly).
+  * The work for a manuscript should be managed at the Project level in the DB. The project name should begin with "[Manuscript] ... ".
 * **Action**: These represent the markers driving the timeline for the project and can represent tangible, deliverable digital items that we produce in support of the activity plan. They help communicate both deadlines, as well as the drivers for those deadlines. Milestones will help guide communication and planning with the team and between projects. All activities should be assigned a lead and a planned end date.
