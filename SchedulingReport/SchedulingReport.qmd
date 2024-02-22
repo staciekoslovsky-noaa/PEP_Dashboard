@@ -25,6 +25,8 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
                                     # WHERE (planned_end_date <= (now() + \'60 days\'::interval)
                                     # OR (planned_start_date <= now() AND planned_end_date >= now()))
+work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
+manuscripts <- unique(work_manuscripts$project_name) 
 
 RPostgreSQL::dbDisconnect(con)
 
@@ -33,7 +35,7 @@ overdue <- work %>%
   select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
   rename("Activity Plan" = activity_plan_nickname,
          "Action" = activity_name,
-         "Lead" = activity_lead,
+         "Action Lead" = activity_lead,
          "Planned End Date" = planned_end_date)
 
 planning <- work %>%
@@ -64,7 +66,7 @@ The information in this report represents the outstanding and upcoming work for 
 The following table lists the actions that are overdue in the DB.
 
 ```{r overdue_work}
-knitr::kable(overdue, format = "html")
+knitr::kable(overdue, format = "pipe", padding = 2)
 ```
 
 # Planned Work by Action Lead
@@ -179,4 +181,32 @@ for (a in 1:nrow(activityPlan)) {
   }
 }
 
+```
+
+# Manuscripts
+
+The following tables list the actions associated with each planned manuscript.
+
+```{r manuscripts, results = "asis"}
+""
+# print(work_manuscripts)
+
+# knitr::kable(work_manuscripts, format = "html")
+
+for (m in 1:length(manuscripts)) {
+  cat("\n\n## ", substr(manuscripts[m], 13, nchar(manuscripts[m])), "\n")
+
+  manuscript_subset <- work_manuscripts %>%
+    filter(project_name == manuscripts[m]) %>%
+    select(-project_name, -activity_type) %>%
+    rename("Action" = activity_name,
+           "Action Lead" = activity_lead,
+           "Planned End Date" = planned_end_date,
+           "Status" = activity_status)
+
+  #table <- 
+  print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
+  #print(table)
+  #cat('\n\n<!-- -->\n\n')
+}
 ```
