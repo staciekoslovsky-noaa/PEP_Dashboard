@@ -188,11 +188,6 @@ for (a in 1:nrow(activityPlan)) {
 The following tables list the actions associated with each planned manuscript.
 
 ```{r manuscripts, results = "asis"}
-""
-# print(work_manuscripts)
-
-# knitr::kable(work_manuscripts, format = "html")
-
 for (m in 1:length(manuscripts)) {
   cat("\n\n## ", substr(manuscripts[m], 13, nchar(manuscripts[m])), "\n")
 
@@ -204,9 +199,6 @@ for (m in 1:length(manuscripts)) {
            "Planned End Date" = planned_end_date,
            "Status" = activity_status)
 
-  #table <- 
   print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
-  #print(table)
-  #cat('\n\n<!-- -->\n\n')
 }
 ```
