@@ -1,0 +1,220 @@
+---
+title: "PEP Scheduling Report"
+toc: true
+theme: superhero
+format: html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(RPostgreSQL)
+library(ggplot2)
+library(scales)
+library(ggpattern)
+library(stringr)
+
+# Connect to DB and get starting data
+con <- RPostgreSQL::dbConnect(PostgreSQL(), 
+                              dbname = Sys.getenv("pep_db"), 
+                              host = Sys.getenv("pep_ip"), 
+                              user = Sys.getenv("pep_admin"), 
+                              password =  Sys.getenv("admin_pw"))
+
+work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
+                                    # WHERE (planned_end_date <= (now() + \'60 days\'::interval)
+                                    # OR (planned_start_date <= now() AND planned_end_date >= now()))
+work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
+manuscripts <- unique(work_manuscripts$project_name) 
+
+RPostgreSQL::dbDisconnect(con)
+
+overdue <- work %>%
+  filter(planned_end_date <= Sys.Date()) %>%
+  select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
+  rename("Activity Plan" = activity_plan_nickname,
+         "Action" = activity_name,
+         "Action Lead" = activity_lead,
+         "Planned End Date" = planned_end_date)
+
+planning <- work %>%
+  filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
+  mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
+         adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
+         ylab_staff = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 50),
+         ylab_project = str_wrap(paste0(activity_plan_nickname,": ", activity_name, " (", activity_lead, ")"), width = 50)) 
+           
+
+staff <- unique(planning$activity_lead)
+
+activityPlan <- planning %>%
+  arrange(activity_plan_nickname) %>% 
+  select(activity_plan_nickname) %>%
+  unique()
+  
+```
+
+
+This report was generated on `r Sys.Date()`.
+
+# Introduction
+
+The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
+
+# Overdue Work
+
+The following table lists the actions that are overdue in the DB.
+
+
+```{r overdue_work}
+knitr::kable(overdue, format = "pipe", padding = 2)
+```
+
+
+# Planned Work by Action Lead
+
+For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
+
+
+```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8}
+
+for (i in 1:length(staff)) {
+  cat("\n\n## ", staff[i], "\n")
+  
+  figure_staff <- planning %>%
+    filter(activity_lead == staff[i]) %>%
+    mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
+    mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
+                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other")))
+  
+  fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
+                     y = ylab, yend = ylab, 
+                     color = activity_type)) +
+    geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", size = 1.5) +
+    geom_segment(size = 5) +
+    # scale_color_manual(values = c("Not yet started" = "darkslategray",
+    #                             "Awaiting dependency" = "darkgoldenrod2",
+    #                             "In progress" = "chartreuse4")) + 
+    scale_color_manual(values = c("Milestone" = "cadetblue",
+                                "Prep/Planning" = "darkolivegreen2",
+                                "Development" = "darkolivegreen4",
+                                "Fieldwork/Travel" = "darkgoldenrod2",
+                                "Dataset" = "chocolate1",
+                                "Analysis" = "chocolate3",
+                                "Report/Manuscript" = "chocolate4",
+                                "Other" = "darkslategray")) +
+    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 150),
+                 date_labels = "%Y-%m-%d", 
+                 date_breaks ="1 month") + 
+    labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
+         x = "Date",
+         y = "Action",
+         color = "Action Type") +
+    theme(plot.title.position = "plot") +
+    theme(panel.grid.minor = element_blank()) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+  
+  print(fig)  
+}
+```
+
+
+# Planned Work by Project
+
+For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
+
+
+```{r figures_byProject, results = 'asis', fig.width = 10}
+
+for (a in 1:nrow(activityPlan)) {
+  cat("\n\n## ", activityPlan$activity_plan_nickname[a], "\n")
+  
+  component <- planning %>%
+    filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+    select(component_name) %>%
+    arrange(component_name) %>%
+    unique() 
+  
+  for (c in 1:nrow(component)) {
+   cat("\n\n### ", component$component_name[c], "\n")
+    
+    project <- planning %>% 
+      filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+      filter(component_name == component$component_name[c]) %>% 
+      select(project_name) %>%
+      arrange(project_name) %>%
+      unique()
+    
+    for (p in 1:nrow(project)) {
+      figure_project <- planning %>% 
+        filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+        filter(component_name == component$component_name[c]) %>% 
+        filter(project_name == project$project_name[p]) %>% 
+        mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project)))) %>%
+        mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
+                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other"))) %>%
+        arrange(desc(adjusted_end), ylab) %>%
+        mutate(task_id = paste0("task_", stringr::str_pad(row_number(), 2, pad = "0")))
+      
+      fig <- ggplot(figure_project, aes(x = adjusted_start, xend = adjusted_end,
+                                       y = task_id, yend = task_id, 
+                                       color = activity_type)) +
+        geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", size = 1.5) +
+        geom_segment(size = 5) +
+        scale_color_manual(values = c("Milestone" = "cadetblue",
+                                "Prep/Planning" = "darkolivegreen2",
+                                "Development" = "darkolivegreen4",
+                                "Fieldwork/Travel" = "darkgoldenrod2",
+                                "Dataset" = "chocolate1",
+                                "Analysis" = "chocolate3",
+                                "Report/Manuscript" = "chocolate4",
+                                "Other" = "darkslategray")) +
+        scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 150),
+             date_labels = "%Y-%m-%d", 
+             date_breaks ="1 month") + 
+        scale_y_discrete(labels = figure_project$ylab) + 
+        labs(title = project$project_name[p],
+             x = "Date",
+             y = "Action",
+             color = "Action Status") +
+        theme(plot.title.position = "plot") +
+        theme(panel.grid.minor = element_blank()) +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+      
+      print(fig)
+    }
+  }
+}
+
+```
+
+
+# Manuscripts
+
+The following tables list the actions associated with each planned manuscript.
+
+
+```{r manuscripts, results = "asis"}
+""
+# print(work_manuscripts)
+
+# knitr::kable(work_manuscripts, format = "html")
+
+for (m in 1:length(manuscripts)) {
+  cat("\n\n## ", substr(manuscripts[m], 13, nchar(manuscripts[m])), "\n")
+
+  manuscript_subset <- work_manuscripts %>%
+    filter(project_name == manuscripts[m]) %>%
+    select(-project_name, -activity_type) %>%
+    rename("Action" = activity_name,
+           "Action Lead" = activity_lead,
+           "Planned End Date" = planned_end_date,
+           "Status" = activity_status)
+
+  #table <- 
+  print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
+  #print(table)
+  #cat('\n\n<!-- -->\n\n')
+}
+```
