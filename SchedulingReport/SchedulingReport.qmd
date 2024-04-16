@@ -30,6 +30,14 @@ manuscripts <- unique(work_manuscripts$project_name)
 
 RPostgreSQL::dbDisconnect(con)
 
+due_soon <- work %>%
+  filter(planned_end_date > Sys.Date() & planned_end_date <= Sys.Date() + 10) %>%
+  select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
+  rename("Activity Plan" = activity_plan_nickname,
+         "Action" = activity_name,
+         "Action Lead" = activity_lead,
+         "Planned End Date" = planned_end_date)
+
 overdue <- work %>%
   filter(planned_end_date <= Sys.Date()) %>%
   select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
@@ -60,6 +68,14 @@ This report was generated on `r Sys.Date()`.
 # Introduction
 
 The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
+
+# Work Due Soon
+
+The following table lists the actions that will be due within the next 10 days in the DB.
+
+```{r due_soon}
+knitr::kable(due_soon, format = "pipe", padding = 2)
+```
 
 # Overdue Work
 
