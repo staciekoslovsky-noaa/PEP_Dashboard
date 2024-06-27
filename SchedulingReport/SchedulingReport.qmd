@@ -25,8 +25,12 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
                                     # WHERE (planned_end_date <= (now() + \'60 days\'::interval)
                                     # OR (planned_start_date <= now() AND planned_end_date >= now()))
+
 work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
 manuscripts <- unique(work_manuscripts$project_name) 
+
+work_reports <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_reports") 
+reports <- unique(work_reports$project_name) 
 
 RPostgreSQL::dbDisconnect(con)
 
@@ -216,5 +220,26 @@ for (m in 1:length(manuscripts)) {
            "Status" = activity_status)
 
   print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
+}
+```
+
+
+# Reports
+
+The following tables list the actions associated with each planned report.
+
+```{r reports, results = "asis"}
+for (r in 1:length(reports)) {
+  cat("\n\n## ", substr(reports[r], 10, nchar(reports[r])), "\n")
+
+  report_subset <- work_reports %>%
+    filter(project_name == reports[r]) %>%
+    select(-project_name, -activity_type) %>%
+    rename("Action" = activity_name,
+           "Action Lead" = activity_lead,
+           "Planned End Date" = planned_end_date,
+           "Status" = activity_status)
+
+  print(knitr::kable(report_subset, format = "pipe", padding = 2))
 }
 ```
