@@ -103,6 +103,7 @@ for (i in 1:length(staff)) {
     mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
     mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
                                 "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other")))
+  #Sort by project and end date
   
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
                      y = ylab, yend = ylab, 
