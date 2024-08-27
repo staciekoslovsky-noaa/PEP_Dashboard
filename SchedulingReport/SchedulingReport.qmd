@@ -54,8 +54,8 @@ planning <- work %>%
   filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
   mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
          adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
-         ylab_staff = str_wrap(paste(activity_plan_nickname, activity_name, sep = ": "), width = 50),
-         ylab_project = str_wrap(paste0(activity_plan_nickname,": ", activity_name, " (", activity_lead, ")"), width = 50)) 
+         ylab_staff = str_wrap(paste(project_activity, activity_name, sep = ": "), width = 50),
+         ylab_project = str_wrap(paste0(project_activity,": ", activity_name, " (", activity_lead, ")"), width = 50)) 
            
 
 staff <- unique(planning$activity_lead)
@@ -91,7 +91,7 @@ knitr::kable(overdue, format = "pipe", padding = 2)
 
 # Planned Work by Action Lead
 
-For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
+For actions where there is no start date assigned, an anticipated start date of 15 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
 
 ```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8}
 
@@ -102,7 +102,8 @@ for (i in 1:length(staff)) {
     filter(activity_lead == staff[i]) %>%
     mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
     mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
-                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other")))
+                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other"))) %>%
+    arrange(project_activity, adjusted_end)
   #Sort by project and end date
   
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
@@ -130,7 +131,8 @@ for (i in 1:length(staff)) {
          color = "Action Type") +
     theme(plot.title.position = "plot") +
     theme(panel.grid.minor = element_blank()) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    theme(legend.position = 'top')
   
   print(fig)  
 }
@@ -138,7 +140,7 @@ for (i in 1:length(staff)) {
 
 # Planned Work by Project
 
-For actions where there is no start date assigned, an anticipated start date of 60 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
+For actions where there is no start date assigned, an anticipated start date of 15 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
 
 ```{r figures_byProject, results = 'asis', fig.width = 10}
 
