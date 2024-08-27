@@ -104,7 +104,6 @@ for (i in 1:length(staff)) {
     mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
                                 "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other"))) %>%
     arrange(project_activity, adjusted_end)
-  #Sort by project and end date
   
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
                      y = ylab, yend = ylab, 
