@@ -23,8 +23,6 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
                               password =  Sys.getenv("admin_pw"))
 
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
-                                    # WHERE (planned_end_date <= (now() + \'60 days\'::interval)
-                                    # OR (planned_start_date <= now() AND planned_end_date >= now()))
 
 work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
 manuscripts <- unique(work_manuscripts$project_name) 
@@ -32,33 +30,39 @@ manuscripts <- unique(work_manuscripts$project_name)
 work_reports <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_reports") 
 reports <- unique(work_reports$project_name) 
 
+work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
+
 RPostgreSQL::dbDisconnect(con)
 
 due_soon <- work %>%
   filter(planned_end_date > Sys.Date() & planned_end_date <= Sys.Date() + 10) %>%
-  select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
-  rename("Activity Plan" = activity_plan_nickname,
-         "Action" = activity_name,
-         "Action Lead" = activity_lead,
+  select(project_activity, role_name, staff, planned_end_date) %>%
+  rename("Project" = project_activity,
+         "Role" = role_name,
+         "Staff" = staff,
          "Planned End Date" = planned_end_date)
 
 overdue <- work %>%
   filter(planned_end_date <= Sys.Date()) %>%
-  select(activity_plan_nickname, activity_name, activity_lead, planned_end_date) %>%
-  rename("Activity Plan" = activity_plan_nickname,
-         "Action" = activity_name,
-         "Action Lead" = activity_lead,
+  select(project_activity, role_name, staff, planned_end_date) %>%
+  rename("Project" = project_activity,
+         "Role" = role_name,
+         "Staff" = staff,
          "Planned End Date" = planned_end_date)
 
 planning <- work %>%
   filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
   mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
          adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
-         ylab_staff = str_wrap(paste(project_activity, activity_name, sep = ": "), width = 50),
-         ylab_project = str_wrap(paste0(project_activity,": ", activity_name, " (", activity_lead, ")"), width = 50)) 
+         ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 50),
+         ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 50),
+         work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE)) %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE))
            
 
-staff <- unique(planning$activity_lead)
+pep <- unique(planning$staff)
 
 activityPlan <- planning %>%
   arrange(activity_plan_nickname) %>% 
@@ -78,7 +82,12 @@ The information in this report represents the outstanding and upcoming work for 
 The following table lists the actions that will be due within the next 10 days in the DB.
 
 ```{r due_soon}
-knitr::kable(due_soon, format = "pipe", padding = 2)
+if (nrow(due_soon) == 0) {
+  print("Hooray!! No upcoming deadlines!")
+} else {
+  knitr::kable(due_soon, format = "pipe", padding = 2)
+}
+
 ```
 
 # Overdue Work
@@ -86,52 +95,52 @@ knitr::kable(due_soon, format = "pipe", padding = 2)
 The following table lists the actions that are overdue in the DB.
 
 ```{r overdue_work}
-knitr::kable(overdue, format = "pipe", padding = 2)
+if (nrow(overdue) == 0) {
+  print("Hooray!! No overdue work!")
+} else {
+  knitr::kable(overdue, format = "pipe", padding = 2)
+}
 ```
 
 # Planned Work by Action Lead
 
-For actions where there is no start date assigned, an anticipated start date of 15 days before the planned end date has been estimated. Today's date is shown as a grey vertical line on the figure.
+Today's date is shown as a grey vertical line on the figure.
 
 ```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8}
 
-for (i in 1:length(staff)) {
-  cat("\n\n## ", staff[i], "\n")
+for (i in 1:length(pep)) {
+  cat("\n\n## ", pep[i], "\n")
   
   figure_staff <- planning %>%
-    filter(activity_lead == staff[i]) %>%
+    filter(staff == pep[i]) %>%
     mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
-    mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
-                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other"))) %>%
     arrange(project_activity, adjusted_end)
   
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, 
                      y = ylab, yend = ylab, 
-                     color = activity_type)) +
-    geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", size = 1.5) +
+                     color = performance_plan_element, alpha = work_intensity)) +
+    geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", linewidth = 1.5) +
     geom_segment(size = 5) +
-    # scale_color_manual(values = c("Not yet started" = "darkslategray",
-    #                             "Awaiting dependency" = "darkgoldenrod2",
-    #                             "In progress" = "chartreuse4")) + 
-    scale_color_manual(values = c("Milestone" = "cadetblue",
-                                "Prep/Planning" = "darkolivegreen2",
-                                "Development" = "darkolivegreen4",
-                                "Fieldwork/Travel" = "darkgoldenrod2",
-                                "Dataset" = "chocolate1",
-                                "Analysis" = "chocolate3",
-                                "Report/Manuscript" = "chocolate4",
-                                "Other" = "darkslategray")) +
+    scale_color_manual(name = "Performance Plan", 
+                       values = c("Project lead" = "deeppink4",
+                                  "Element 1" = "chocolate1",
+                                  "Element 2" = "darkgoldenrod2", 
+                                  "Element 3" = "darkolivegreen4", 
+                                  "Element 4" = "cadetblue")) +
+    scale_alpha_manual(name = "Work Intensity", 
+                       values = c("High" = 1, 
+                                  "Moderate" = 0.4, 
+                                  "Low" = 0.25, 
+                                  "Unknown" = 0.1)) +
     scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 150),
                  date_labels = "%Y-%m-%d", 
                  date_breaks ="1 month") + 
-    labs(title = paste("Scheduled Actions for ", staff[i], sep = ""),
+    labs(title = paste("Scheduled Roles for ", pep[i], sep = ""),
          x = "Date",
-         y = "Action",
-         color = "Action Type") +
+         y = "Role") +
     theme(plot.title.position = "plot") +
     theme(panel.grid.minor = element_blank()) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-    theme(legend.position = 'top')
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
   
   print(fig)  
 }
@@ -168,35 +177,36 @@ for (a in 1:nrow(activityPlan)) {
         filter(component_name == component$component_name[c]) %>% 
         filter(project_name == project$project_name[p]) %>% 
         mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project)))) %>%
-        mutate(activity_type = factor(activity_type, levels=c("Milestone", "Prep/Planning", "Development",
-                                "Fieldwork/Travel", "Dataset", "Analysis", "Report/Manuscript", "Other"))) %>%
+
         arrange(desc(adjusted_end), ylab) %>%
         mutate(task_id = paste0("task_", stringr::str_pad(row_number(), 2, pad = "0")))
       
       fig <- ggplot(figure_project, aes(x = adjusted_start, xend = adjusted_end,
                                        y = task_id, yend = task_id, 
-                                       color = activity_type)) +
-        geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", size = 1.5) +
+                                       color = performance_plan_element, alpha = work_intensity)) +
+        geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", linewidth = 1.5) +
         geom_segment(size = 5) +
-        scale_color_manual(values = c("Milestone" = "cadetblue",
-                                "Prep/Planning" = "darkolivegreen2",
-                                "Development" = "darkolivegreen4",
-                                "Fieldwork/Travel" = "darkgoldenrod2",
-                                "Dataset" = "chocolate1",
-                                "Analysis" = "chocolate3",
-                                "Report/Manuscript" = "chocolate4",
-                                "Other" = "darkslategray")) +
+        scale_color_manual(name = "Performance Plan", 
+                       values = c("Project lead" = "deeppink4",
+                                  "Element 1" = "chocolate1",
+                                  "Element 2" = "darkgoldenrod2", 
+                                  "Element 3" = "darkolivegreen4", 
+                                  "Element 4" = "cadetblue")) +
+        scale_alpha_manual(name = "Work Intensity", 
+                       values = c("High" = 1, 
+                                  "Moderate" = 0.4, 
+                                  "Low" = 0.25, 
+                                  "Unknown" = 0.1)) +
         scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 150),
              date_labels = "%Y-%m-%d", 
              date_breaks ="1 month") + 
         scale_y_discrete(labels = figure_project$ylab) + 
         labs(title = project$project_name[p],
              x = "Date",
-             y = "Action",
-             color = "Action Status") +
+             y = "Role") +
         theme(plot.title.position = "plot") +
         theme(panel.grid.minor = element_blank()) +
-        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
       
       print(fig)
     }
@@ -215,11 +225,11 @@ for (m in 1:length(manuscripts)) {
 
   manuscript_subset <- work_manuscripts %>%
     filter(project_name == manuscripts[m]) %>%
-    select(-project_name, -activity_type) %>%
-    rename("Action" = activity_name,
-           "Action Lead" = activity_lead,
+    select(-project_name) %>%
+    rename("Role" = role_name,
+           "Staff" = staff,
            "Planned End Date" = planned_end_date,
-           "Status" = activity_status)
+           "Status" = role_status)
 
   print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
 }
@@ -236,12 +246,37 @@ for (r in 1:length(reports)) {
 
   report_subset <- work_reports %>%
     filter(project_name == reports[r]) %>%
-    select(-project_name, -activity_type) %>%
-    rename("Action" = activity_name,
-           "Action Lead" = activity_lead,
+    select(-project_name) %>%
+    rename("Role" = role_name,
+           "Staff" = staff,
            "Planned End Date" = planned_end_date,
-           "Status" = activity_status)
+           "Status" = role_status)
 
   print(knitr::kable(report_subset, format = "pipe", padding = 2))
+}
+```
+
+
+# Performance Plan Elements (FY25)
+
+The following tables list the roles for all PEP staff by performance plan element.
+
+```{r elements, results = "asis"}
+for (p in 1:length(pep)) {
+  cat("\n\n## ", pep[p], "\n")
+
+  elements <- work_fy %>%
+    filter(staff == pep[p]) %>%
+    arrange(performance_plan_element, project_activity) %>%
+    select(performance_plan_element, project_activity, role_name, planned_start_date, planned_end_date, role_status, work_intensity) %>%
+    rename("Element" = performance_plan_element,
+           "Project" = project_activity,
+           "Role" = role_name,
+           "Planned Start Date" = planned_start_date,
+           "Planned End Date" = planned_end_date, 
+           "Status" = role_status,
+           "Work Intensity" = work_intensity)
+
+  print(knitr::kable(elements, format = "pipe", padding = 2))
 }
 ```
