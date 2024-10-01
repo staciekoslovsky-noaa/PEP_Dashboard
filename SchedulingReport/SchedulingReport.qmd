@@ -24,6 +24,21 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
 
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
 
+work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+  
+work30 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_30days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+
+work90 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_90days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+
 work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
 manuscripts <- unique(work_manuscripts$project_name) 
 
@@ -101,6 +116,50 @@ if (nrow(overdue) == 0) {
   knitr::kable(overdue, format = "pipe", padding = 2)
 }
 ```
+# Potential Bottlenecks
+
+The following figures display the number of roles by work intensity by staff for this week, the next 30 days and the next 90 days.
+
+```{r bottlenecks}
+
+ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) + 
+  geom_tile() +
+  scale_fill_manual("# Roles", 
+                    values = c("1" = "cadetblue", 
+                                  "2" = "darkolivegreen4", 
+                                  "3" = "darkgoldenrod2", 
+                                  "4" = "chocolate1",
+                                  "5+" = "deeppink4")) +
+  labs(title = "# of Roles by Intensity - This Week",
+     x = "Staff",
+     y = "Work Intensity")
+
+ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) + 
+  geom_tile() +
+  scale_fill_manual("# Roles", 
+                    values = c("1" = "cadetblue", 
+                                  "2" = "darkolivegreen4", 
+                                  "3" = "darkgoldenrod2", 
+                                  "4" = "chocolate1",
+                                  "5+" = "deeppink4")) +
+  labs(title = "# of Roles by Intensity - 30 Days",
+     x = "Staff",
+     y = "Work Intensity")
+
+ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) + 
+  geom_tile() +
+  scale_fill_manual("# Roles", 
+                    values = c("1" = "cadetblue", 
+                                  "2" = "darkolivegreen4", 
+                                  "3" = "darkgoldenrod2", 
+                                  "4" = "chocolate1",
+                                  "5+" = "deeppink4")) +
+  labs(title = "# of Roles by Intensity - 90 Days",
+     x = "Staff",
+     y = "Work Intensity")
+
+```
+
 
 # Planned Work by Action Lead
 
