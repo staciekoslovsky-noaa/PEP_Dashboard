@@ -161,7 +161,7 @@ ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
 ```
 
 
-# Planned Work by Action Lead
+# Planned Work by PEP Staff
 
 Today's date is shown as a grey vertical line on the figure.
 
@@ -199,7 +199,8 @@ for (i in 1:length(pep)) {
          y = "Role") +
     theme(plot.title.position = "plot") +
     theme(panel.grid.minor = element_blank()) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+    theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
+    theme(legend.position = "top")
   
   print(fig)  
 }
@@ -265,7 +266,8 @@ for (a in 1:nrow(activityPlan)) {
              y = "Role") +
         theme(plot.title.position = "plot") +
         theme(panel.grid.minor = element_blank()) +
-        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+        theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
+        theme(legend.position = "top")
       
       print(fig)
     }
