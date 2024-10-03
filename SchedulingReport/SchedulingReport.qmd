@@ -22,6 +22,10 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
                               user = Sys.getenv("pep_admin"), 
                               password =  Sys.getenv("admin_pw"))
 
+qaqc <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qaqc_roles_missing_info")%>%
+  rename("Staff" = last_name,
+         "# Missing Info" = num_missing_info)
+
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
 
 work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
@@ -48,7 +52,6 @@ reports <- unique(work_reports$project_name)
 work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") 
 
 RPostgreSQL::dbDisconnect(con)
-
 due_soon <- work %>%
   filter(planned_end_date > Sys.Date() & planned_end_date <= Sys.Date() + 10) %>%
   select(project_activity, role_name, staff, planned_end_date) %>%
@@ -90,9 +93,21 @@ This report was generated on `r Sys.Date()`.
 
 The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
 
+# Roles Missing Info
+
+The following table lists the the number of roles for each staff that are missing required information in the DB.
+
+```{r qaqc, results='asis'}
+if (nrow(qaqc) == 0) {
+  cat("\n Hooray!! All records are complete!\n ")
+} else {
+  knitr::kable(qaqc, format = "pipe", padding = 2)
+}
+```
+
 # Work Due Soon
 
-The following table lists the actions that will be due within the next 10 days in the DB.
+The following table lists the roles that are expected to end within the next 10 days in the DB.
 
 ```{r due_soon, results='asis'}
 if (nrow(due_soon) == 0) {
@@ -104,7 +119,7 @@ if (nrow(due_soon) == 0) {
 
 # Overdue Work
 
-The following table lists the actions that are overdue in the DB.
+The following table lists the roles that are overdue in the DB.
 
 ```{r overdue_work, results='asis'}
 if (nrow(overdue) == 0) {
