@@ -98,7 +98,9 @@ The information in this report represents the outstanding and upcoming work for 
 The following table lists the the number of roles for each staff that are missing required information in the DB.
 
 <details>
-  <summary>Click to Expand</summary>
+
+<summary>Click to Expand</summary>
+
 ```{r qaqc, results='asis'}
 if (nrow(qaqc) == 0) {
   cat("\n Hooray!! All records are complete!\n ")
@@ -106,7 +108,8 @@ if (nrow(qaqc) == 0) {
   knitr::kable(qaqc, format = "pipe", padding = 2)
 }
 ```
-</details> 
+
+</details>
 
 # Work Due Soon
 
@@ -136,9 +139,10 @@ if (nrow(overdue) == 0) {
 
 The following figures display the number of roles by work intensity by staff for this week, in the next 30 days and in the next 90 days.
 
-::: {.panel-tabset}
+::: panel-tabset
 ## This Week
-```{r bottleneck00} 
+
+```{r bottleneck00}
 ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
@@ -151,8 +155,10 @@ ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) +
      x = "Work Intensity",
      y = "Staff")
 ```
+
 ## Next 30 Days
-```{r bottleneck30} 
+
+```{r bottleneck30}
 ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
@@ -165,8 +171,10 @@ ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) +
      x = "Work Intensity",
      y = "Staff")
 ```
+
 ## Next 90 Days
-```{r bottleneck90} 
+
+```{r bottleneck90}
 ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
@@ -185,7 +193,7 @@ ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
 
 Today's date is shown as a grey vertical line on the figure. Roles that are missing "work intensity" appear on the y-axis of each chart, but the start/end dates are not visible.
 
-```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8} 
+```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8}
 cat("::: {.panel-tabset}")
 cat("\n")
 
@@ -228,13 +236,16 @@ for (i in 1:length(pep)) {
 }
 cat(":::")
 ```
-# Planned Work by Project 
+
+# Planned Work by Project
 
 Today's date is shown as a grey vertical line on the figure. Roles that are missing "work intensity" appear on the y-axis of each chart, but the start/end dates are not visible.
 
 <details>
-  <summary>Click to Expand</summary>
-```{r figures_byProject, results = 'asis', fig.width = 10} 
+
+<summary>Click to Expand</summary>
+
+```{r figures_byProject, results = 'asis', fig.width = 10}
 for (a in 1:nrow(activityPlan)) {
   cat("\n\n## ", activityPlan$activity_plan_nickname[a], "\n")
 
@@ -299,14 +310,17 @@ for (a in 1:nrow(activityPlan)) {
   }
 }
 ```
-</details> 
+
+</details>
 
 # Manuscripts
 
 The following tables list the actions associated with each planned manuscript.
 
 <details>
-  <summary>Click to Expand</summary>
+
+<summary>Click to Expand</summary>
+
 ```{r manuscripts, results = "asis"}
 for (m in 1:length(manuscripts)) {
   cat("\n\n## ", substr(manuscripts[m], 13, nchar(manuscripts[m])), "\n")
@@ -322,6 +336,7 @@ for (m in 1:length(manuscripts)) {
   print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
 }
 ```
+
 </details>
 
 # Reports
@@ -329,8 +344,10 @@ for (m in 1:length(manuscripts)) {
 The following tables list the actions associated with each planned report.
 
 <details>
-  <summary>Click to Expand</summary>
-```{r reports, results = "asis"} 
+
+<summary>Click to Expand</summary>
+
+```{r reports, results = "asis"}
 for (r in 1:length(reports)) {
    cat("\n\n## ", substr(reports[r], 10, nchar(reports[r])), "\n")
 
@@ -345,6 +362,7 @@ for (r in 1:length(reports)) {
     print(knitr::kable(report_subset, format = "pipe", padding = 2))
   }
 ```
+
 </details>
 
 # Performance Plan Elements (FY25)
@@ -352,7 +370,8 @@ for (r in 1:length(reports)) {
 The following tables list the roles for all PEP staff by performance plan element.
 
 <details>
-  <summary>Click to Expand</summary>
+
+<summary>Click to Expand</summary>
 
 ```{r elements, results='asis'}
 cat("::: {.panel-tabset}")
@@ -369,7 +388,8 @@ for (p in 1:length(pep)) {
   for (e in 1:nrow(elements)) {
 
     element <- elements$performance_plan_element[e]
-    cat("\n### ", if(element == 0) {"Project Lead"} else {paste0("Element #", element)}, "\n")
+    cat("\n")
+    cat("\n\n### ", if(element == 0) {"Project Lead"} else {paste0("Element #", element)}, "\n")
     
     project_parents <- work_fy %>%
       filter(staff == peep,
@@ -414,4 +434,5 @@ for (p in 1:length(pep)) {
 }
 cat(":::")
 ```
+
 </details>
