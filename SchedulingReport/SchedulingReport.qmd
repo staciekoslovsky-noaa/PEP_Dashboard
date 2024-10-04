@@ -75,7 +75,7 @@ planning <- work %>%
          ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 50),
          ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 50),
          work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
-  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE)) %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4"), ordered = TRUE)) %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE))
            
 
@@ -203,10 +203,10 @@ for (i in 1:length(pep)) {
     geom_segment(size = 5) +
     scale_color_manual(name = "Performance Plan",
                        values = c("Project lead" = "deeppink4",
-                                  "Element 1" = "chocolate1",
-                                  "Element 2" = "darkgoldenrod2",
-                                  "Element 3" = "darkolivegreen4",
-                                  "Element 4" = "cadetblue")) +
+                                  "Elem#1" = "chocolate1",
+                                  "Elem#2" = "darkgoldenrod2",
+                                  "Elem#3" = "darkolivegreen4",
+                                  "Elem#4" = "cadetblue")) +
     scale_alpha_manual(name = "Work Intensity",
                        values = c("High" = 1,
                                   "Moderate" = 0.45,
@@ -221,7 +221,7 @@ for (i in 1:length(pep)) {
     theme(plot.title.position = "plot") +
     theme(panel.grid.minor = element_blank()) +
     theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
-    theme(legend.position = "top")
+    theme(legend.position = "top", legend.box = "vertical", legend.margin = margin()) 
 
   print(fig)
   cat("\n")
@@ -272,10 +272,10 @@ for (a in 1:nrow(activityPlan)) {
         geom_segment(size = 5) +
         scale_color_manual(name = "Performance Plan",
                        values = c("Project lead" = "deeppink4",
-                                  "Element 1" = "chocolate1",
-                                  "Element 2" = "darkgoldenrod2",
-                                  "Element 3" = "darkolivegreen4",
-                                  "Element 4" = "cadetblue")) +
+                                  "Elem#1" = "chocolate1",
+                                  "Elem#2" = "darkgoldenrod2",
+                                  "Elem#3" = "darkolivegreen4",
+                                  "Elem#4" = "cadetblue")) +
         scale_alpha_manual(name = "Work Intensity",
                        values = c("High" = 1,
                                   "Moderate" = 0.45,
@@ -291,7 +291,7 @@ for (a in 1:nrow(activityPlan)) {
         theme(plot.title.position = "plot") +
         theme(panel.grid.minor = element_blank()) +
         theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
-        theme(legend.position = "top")
+        theme(legend.position = "top", legend.box = "vertical", legend.margin = margin())
 
       print(fig)
       cat("\n")
@@ -353,12 +353,12 @@ The following tables list the roles for all PEP staff by performance plan elemen
 
 <details>
   <summary>Click to Expand</summary>
-```{r elements, results = "asis"}
-cat("::: {.panel-tabset} \n")
 
+```{r elements, results='asis'}
+cat("::: {.panel-tabset}")
 for (p in 1:length(pep)) {
   peep <- pep[p]
-  cat("\n\n## ", peep, " \n")
+  cat("\n\n## ", peep, "\n")
   
   elements <- work_fy %>%
     filter(staff == peep) %>%
@@ -369,8 +369,7 @@ for (p in 1:length(pep)) {
   for (e in 1:nrow(elements)) {
 
     element <- elements$performance_plan_element[e]
-    cat("\n\n### ", if(element == 0) {"Project Lead"} else {paste0("Element ", element)})
-    cat("\n")
+    cat("\n### ", if(element == 0) {"Project Lead"} else {paste0("Element #", element)}, "\n")
     
     project_parents <- work_fy %>%
       filter(staff == peep,
@@ -381,7 +380,7 @@ for (p in 1:length(pep)) {
     
     for (c in 1:nrow(project_parents)) {
       project_parent <- project_parents$project_parents[c]
-      cat("\n [", project_parent, "]{.ul}\n")
+      cat("\n#### [", project_parent, "]{.ul}\n")
       
       projects <- work_fy %>%
       filter(staff == peep,
@@ -393,7 +392,7 @@ for (p in 1:length(pep)) {
       
       for (j in 1:nrow(projects)) {
         project <- projects$project_name[j]
-        cat("\n ", project, "\n")
+        cat("\n##### ..", project, "\n")
         
         if(element > 0) {
           roles <- work_fy %>%
@@ -406,7 +405,7 @@ for (p in 1:length(pep)) {
             arrange(role_name)
       
           for (r in 1:nrow(roles)) {
-            cat("\n -", roles$role_name[r], "\n")
+            cat("\n###### ....", roles$role_name[r], "\n")
             }
           }
         }
