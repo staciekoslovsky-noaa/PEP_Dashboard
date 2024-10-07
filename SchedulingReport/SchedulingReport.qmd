@@ -379,6 +379,7 @@ for (p in 1:length(pep)) {
   peep <- pep[p]
   cat("\n\n## ", peep, "\n")
   
+  
   elements <- work_fy %>%
     filter(staff == peep) %>%
     select(performance_plan_element) %>%
@@ -388,8 +389,7 @@ for (p in 1:length(pep)) {
   for (e in 1:nrow(elements)) {
 
     element <- elements$performance_plan_element[e]
-    cat("\n")
-    cat("\n\n### ", if(element == 0) {"Project Lead"} else {paste0("Element #", element)}, "\n")
+    cat("\n\n### ", if(element == 0) {"---Project Lead---"} else {paste0("---Element #", element, "---")}, "\n")
     
     project_parents <- work_fy %>%
       filter(staff == peep,
@@ -412,7 +412,7 @@ for (p in 1:length(pep)) {
       
       for (j in 1:nrow(projects)) {
         project <- projects$project_name[j]
-        cat("\n##### ..", project, "\n")
+        cat("\n##### .. ", project, "\n")
         
         if(element > 0) {
           roles <- work_fy %>%
@@ -425,7 +425,7 @@ for (p in 1:length(pep)) {
             arrange(role_name)
       
           for (r in 1:nrow(roles)) {
-            cat("\n###### ....", roles$role_name[r], "\n")
+            cat("\n###### .. .. ", roles$role_name[r], "\n")
             }
           }
         }
