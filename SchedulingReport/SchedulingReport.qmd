@@ -49,7 +49,9 @@ manuscripts <- unique(work_manuscripts$project_name)
 work_reports <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_reports") 
 reports <- unique(work_reports$project_name) 
 
-work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") 
+work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
+  mutate(pp = ifelse(performance_plan_element == 0, project_pp_element, performance_plan_element)) %>%
+  filter(!is.na(pp))
 
 RPostgreSQL::dbDisconnect(con)
 due_soon <- work %>%
@@ -382,18 +384,18 @@ for (p in 1:length(pep)) {
   
   elements <- work_fy %>%
     filter(staff == peep) %>%
-    select(performance_plan_element) %>%
+    select(pp) %>%
     unique() %>%
-    arrange(performance_plan_element)
+    arrange(pp)
   
   for (e in 1:nrow(elements)) {
 
-    element <- elements$performance_plan_element[e]
-    cat("\n\n### ", if(element == 0) {"---Project Lead---"} else {paste0("---Element #", element, "---")}, "\n")
+    element <- elements$pp[e]
+    cat("\n\n### ", paste0("---Element #", element, "---"), "\n")
     
     project_parents <- work_fy %>%
       filter(staff == peep,
-             performance_plan_element == element) %>%
+             pp == element) %>%
       select(project_parents) %>%
       unique() %>%
       arrange(project_parents)
@@ -404,7 +406,7 @@ for (p in 1:length(pep)) {
       
       projects <- work_fy %>%
       filter(staff == peep,
-             performance_plan_element == element,
+             pp == element,
              project_parents == project_parent) %>%
       select(project_name) %>%
       unique() %>%
@@ -417,12 +419,12 @@ for (p in 1:length(pep)) {
         if(element > 0) {
           roles <- work_fy %>%
             filter(staff == peep,
-                   performance_plan_element == element,
+                   pp == element,
                    project_parents == project_parent, 
                    project_name == project) %>%
-            select(role_name) %>%
+            select(performance_plan_element, role_name) %>%
             unique() %>%
-            arrange(role_name)
+            arrange(performance_plan_element, role_name)
       
           for (r in 1:nrow(roles)) {
             cat("\n###### .. .. ", roles$role_name[r], "\n")
