@@ -74,8 +74,8 @@ planning <- work %>%
   filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
   mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
          adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
-         ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 50),
-         ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 50),
+         ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 75),
+         ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 75),
          work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
   mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4"), ordered = TRUE)) %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE))
