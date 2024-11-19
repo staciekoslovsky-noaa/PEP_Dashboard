@@ -51,7 +51,8 @@ reports <- unique(work_reports$project_name)
 
 work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
   mutate(pp = ifelse(performance_plan_element == 0, project_pp_element, performance_plan_element)) %>%
-  filter(!is.na(pp))
+  filter(!is.na(pp)) %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Component Lead", "Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
 
 RPostgreSQL::dbDisconnect(con)
 due_soon <- work %>%
@@ -81,7 +82,7 @@ planning <- work %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE))
            
 
-pep <- unique(planning$staff)
+pep <- unique(planning$staff) 
 
 activityPlan <- planning %>%
   arrange(activity_plan_nickname) %>% 
@@ -386,12 +387,17 @@ for (p in 1:length(pep)) {
     filter(staff == peep) %>%
     select(pp) %>%
     unique() %>%
-    arrange(pp)
+    arrange(pp) 
   
   for (e in 1:nrow(elements)) {
 
     element <- elements$pp[e]
-    cat("\n\n### ", paste0("---Element #", element, "---"), "\n")
+    element_text <- if (element == 0) {paste0("---Component Lead---")}
+        else {paste0("---Element #", element, "---")}
+   
+     cat("\n\n### ", 
+        element_text
+        , "\n")
     
     project_parents <- work_fy %>%
       filter(staff == peep,
