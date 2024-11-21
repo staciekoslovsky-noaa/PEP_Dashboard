@@ -52,7 +52,7 @@ reports <- unique(work_reports$project_name)
 work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
   mutate(pp = ifelse(performance_plan_element == 0, project_pp_element, performance_plan_element)) %>%
   filter(!is.na(pp)) %>%
-  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Component Lead", "Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(1, 2, 3, 4), labels=c("Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
 
 RPostgreSQL::dbDisconnect(con)
 due_soon <- work %>%
@@ -392,8 +392,7 @@ for (p in 1:length(pep)) {
   for (e in 1:nrow(elements)) {
 
     element <- elements$pp[e]
-    element_text <- if (element == 0) {paste0("---Component Lead---")}
-        else {paste0("---Element #", element, "---")}
+    element_text <- paste0("---Element #", element, "---")
    
      cat("\n\n### ", 
         element_text
