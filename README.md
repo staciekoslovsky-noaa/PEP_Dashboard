@@ -2,11 +2,7 @@
 
 Welcome to the PEP Dashboard!
 
-The power in this database comes from the information being populated and updated. The following fields should be completed for all activities:
-* Activity Lead
-* Activity Type
-* Planned Start/End Date (as narrow of a time window as possible)
-* Actual End Date (when the work is completed)
+The power in this database comes from the information being populated and updated. To support this, all the fields for each role should be completed!
 
 A few things to help you get started:
 * Use the links on the right to navigate to different sections of the documentation. 
@@ -22,4 +18,4 @@ Terms:
 * **Project**: These represent a common unit of team organization, distribution of roles, and allocation of time and energy for PEP personnel, and each project should have a set of identified activities.
   * Distribution of roles is important for each project and timelines should be identified up front (and revisited regularly).
   * The work for a manuscript should be managed at the Project level in the DB. The project name should begin with "[Manuscript] ... ".
-* **Action**: These represent the markers driving the timeline for the project and can represent tangible, deliverable digital items that we produce in support of the activity plan. They help communicate both deadlines, as well as the drivers for those deadlines. Milestones will help guide communication and planning with the team and between projects. All activities should be assigned a lead and a planned end date.
+* **Role**: These represent the roles for each staff member on a project and drive the timeline for the project and can represent tangible, deliverable digital items that we produce in support of the activity plan. They help communicate both deadlines, as well as the drivers for those deadlines. Milestones will help guide communication and planning with the team and between projects. As a bonus, this information is used to efficiently populate the Performance Plan Elements for federal employees.
