@@ -31,17 +31,26 @@ work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4schedul
 work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
   
 work30 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_30days") %>%
   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
 
 work90 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_90days") %>%
   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles > 5, "5+", as.character(num_roles)))
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
 
 work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
 manuscripts <- unique(work_manuscripts$project_name) 
@@ -151,10 +160,10 @@ ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
                     values = c("1" = "darkolivegreen3",
-                                  "2" = "gold",
-                                  "3" = "darkorange3",
-                                  "4" = "firebrick4",
-                                  "5+" = "orchid4")) +
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
   labs(title = "# of Roles by Intensity - This Week",
      x = "Work Intensity",
      y = "Staff")
@@ -167,10 +176,10 @@ ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
                     values = c("1" = "darkolivegreen3",
-                                  "2" = "gold",
-                                  "3" = "darkorange3",
-                                  "4" = "firebrick4",
-                                  "5+" = "orchid4")) +
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
   labs(title = "# of Roles by Intensity - 30 Days",
      x = "Work Intensity",
      y = "Staff")
@@ -183,10 +192,10 @@ ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
   geom_tile() +
   scale_fill_manual("# Roles",
                     values = c("1" = "darkolivegreen3",
-                                  "2" = "gold",
-                                  "3" = "darkorange3",
-                                  "4" = "firebrick4",
-                                  "5+" = "orchid4")) +
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
   labs(title = "# of Roles by Intensity - 90 Days",
      x = "Work Intensity",
      y = "Staff")
