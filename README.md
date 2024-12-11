@@ -4,6 +4,8 @@ Welcome to the PEP Dashboard!
 
 The power in this database comes from the information being populated and updated. To support this, all the fields for each role should be completed!
 
+Guidance for 2025 data entry can be found [on Google Drive](https://docs.google.com/document/d/12oKz8Szw80PcVxQXYkYvzI0WmWLTT0X8S44pCLMvqdY/edit?tab=t.0).
+
 A few things to help you get started:
 * Use the links on the right to navigate to different sections of the documentation. 
 * Please use the "Issues" page for ideas or suggestions of things that would be useful within the database.
