@@ -1,0 +1,479 @@
+---
+title: "PEP Scheduling Report"
+toc: true
+theme: superhero
+format: html
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(RPostgreSQL)
+library(ggplot2)
+library(scales)
+library(ggpattern)
+library(stringr)
+
+# Connect to DB and get starting data
+con <- RPostgreSQL::dbConnect(PostgreSQL(), 
+                              dbname = Sys.getenv("pep_db"), 
+                              host = Sys.getenv("pep_ip"), 
+                              user = Sys.getenv("pep_admin"), 
+                              password =  Sys.getenv("admin_pw"))
+
+qaqc <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qaqc_roles_missing_info")%>%
+  rename("Staff" = last_name,
+         "# Missing Info" = num_missing_info)
+
+work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
+
+work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+  
+work30 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_30days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+
+work90 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_90days") %>%
+  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(num_roles = ifelse(num_roles == 1, "1", 
+                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
+                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+
+work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
+manuscripts <- unique(work_manuscripts$project_name) 
+
+work_reports <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_reports") 
+reports <- unique(work_reports$project_name) 
+
+work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
+  mutate(pp = ifelse(performance_plan_element == 0, project_pp_element, performance_plan_element)) %>%
+  filter(!is.na(pp)) %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(1, 2, 3, 4), labels=c("Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
+
+RPostgreSQL::dbDisconnect(con)
+due_soon <- work %>%
+  filter(planned_end_date > Sys.Date() & planned_end_date <= Sys.Date() + 10) %>%
+  select(project_activity, role_name, staff, planned_end_date) %>%
+  rename("Project" = project_activity,
+         "Role" = role_name,
+         "Staff" = staff,
+         "Planned End Date" = planned_end_date)
+
+overdue <- work %>%
+  filter(planned_end_date <= Sys.Date()) %>%
+  select(project_activity, role_name, staff, planned_end_date) %>%
+  rename("Project" = project_activity,
+         "Role" = role_name,
+         "Staff" = staff,
+         "Planned End Date" = planned_end_date)
+
+planning <- work %>%
+  filter(planned_start_date <= Sys.Date() + 150 & planned_end_date > Sys.Date() - 30) %>%
+  mutate(adjusted_start = as.Date(ifelse(planned_start_date < Sys.Date() - 30, Sys.Date() - 30, planned_start_date), origin = '1970-01-01'),
+         adjusted_end = as.Date(ifelse(planned_end_date > Sys.Date() + 150, Sys.Date() + 150, planned_end_date), origin = '1970-01-01'),
+         ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 75),
+         ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 75),
+         work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4"), ordered = TRUE)) %>%
+  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(duration = adjusted_end - adjusted_start)
+           
+
+pep <- unique(planning$staff) 
+
+activityPlan <- planning %>%
+  arrange(activity_plan_nickname) %>% 
+  select(activity_plan_nickname) %>%
+  unique()
+```
+
+
+This report was generated on `r Sys.Date()`.
+
+# Introduction
+
+The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
+
+# Roles Missing Info
+
+The following table lists the the number of roles for each staff that are missing required information in the DB.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+
+```{r qaqc, results='asis'}
+if (nrow(qaqc) == 0) {
+  cat("\n Hooray!! All records are complete!\n ")
+} else {
+  knitr::kable(qaqc, format = "pipe", padding = 2)
+}
+```
+
+
+</details>
+
+# Work Due Soon
+
+The following table lists the roles that are expected to end within the next 10 days in the DB.
+
+
+```{r due_soon, results='asis'}
+if (nrow(due_soon) == 0) {
+  cat("\n Hooray!! No upcoming deadlines!\n ")
+} else {
+  knitr::kable(due_soon, format = "pipe", padding = 2)
+}
+```
+
+
+# Overdue Work
+
+The following table lists the roles that are overdue in the DB.
+
+
+```{r overdue_work, results='asis'}
+if (nrow(overdue) == 0) {
+  cat("\n Hooray!! No overdue work!\n ")
+} else {
+  knitr::kable(overdue, format = "pipe", padding = 2)
+}
+```
+
+
+# Potential Bottlenecks
+
+The following figures display the number of roles by work intensity by staff for this week, in the next 30 days and in the next 90 days.
+
+::: panel-tabset
+## This Week
+
+
+```{r bottleneck00}
+ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) +
+  geom_tile() +
+  scale_fill_manual("# Roles",
+                    values = c("1" = "darkolivegreen3",
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
+  labs(title = "# of Roles by Intensity - This Week",
+     x = "Work Intensity",
+     y = "Staff")
+```
+
+
+## Next 30 Days
+
+
+```{r bottleneck30}
+ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) +
+  geom_tile() +
+  scale_fill_manual("# Roles",
+                    values = c("1" = "darkolivegreen3",
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
+  labs(title = "# of Roles by Intensity - 30 Days",
+     x = "Work Intensity",
+     y = "Staff")
+```
+
+
+## Next 90 Days
+
+
+```{r bottleneck90}
+ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
+  geom_tile() +
+  scale_fill_manual("# Roles",
+                    values = c("1" = "darkolivegreen3",
+                                  "2-3" = "gold",
+                                  "4-5" = "darkorange3",
+                                  "6-8" = "firebrick4",
+                                  "9+" = "orchid4")) +
+  labs(title = "# of Roles by Intensity - 90 Days",
+     x = "Work Intensity",
+     y = "Staff")
+```
+
+:::
+
+# Planned Work by PEP Staff
+
+Today's date is shown as a grey vertical line on the figure. Roles that are missing "work intensity" appear on the y-axis of each chart, but the start/end dates are not visible.
+
+
+```{r figures_byStaff, results = 'asis', fig.width = 10, fig.height = 8}
+cat("::: {.panel-tabset}")
+cat("\n")
+
+for (i in 1:length(pep)) {
+  cat("\n\n## ", pep[i], "\n")
+
+  figure_staff <- planning %>%
+    filter(staff == pep[i]) %>% 
+    filter(!(duration == 180 & work_intensity == 'Low')) %>%
+    mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
+    arrange(project_activity, adjusted_end)
+
+  fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, y = ylab, yend = ylab,
+                                  color = performance_plan_element, alpha = work_intensity)) +
+    geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", linewidth = 1.5) +
+    geom_segment(size = 5) +
+    scale_color_manual(name = "Performance Plan",
+                       values = c("Project lead" = "deeppink4",
+                                  "Elem#1" = "chocolate1",
+                                  "Elem#2" = "darkgoldenrod2",
+                                  "Elem#3" = "darkolivegreen4",
+                                  "Elem#4" = "cadetblue")) +
+    scale_alpha_manual(name = "Work Intensity",
+                       values = c("High" = 1,
+                                  "Moderate" = 0.45,
+                                  "Low" = 0.1,
+                                  "Unknown" = 0)) +
+    scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 150),
+                 date_labels = "%Y-%m-%d",
+                 date_breaks ="1 month") +
+    labs(title = paste("Scheduled Roles for ", pep[i], sep = ""),
+         x = "Date",
+         y = "Role") +
+    theme(plot.title.position = "plot") +
+    theme(panel.grid.minor = element_blank()) +
+    theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
+    theme(legend.position = "top", legend.box = "vertical", legend.margin = margin()) 
+
+  print(fig)
+  cat("\n")
+}
+cat(":::")
+```
+
+
+# Planned Work by Project
+
+Today's date is shown as a grey vertical line on the figure. Roles that are missing "work intensity" appear on the y-axis of each chart, but the start/end dates are not visible.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+
+```{r figures_byProject, results = 'asis', fig.width = 10}
+for (a in 1:nrow(activityPlan)) {
+  cat("\n\n## ", activityPlan$activity_plan_nickname[a], "\n")
+
+  component <- planning %>%
+    filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+    select(component_name) %>%
+    arrange(component_name) %>%
+    unique()
+
+  for (c in 1:nrow(component)) {
+   cat("\n")
+   cat("\n\n### ", component$component_name[c], "\n")
+
+    project <- planning %>%
+      filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+      filter(component_name == component$component_name[c]) %>%
+      select(project_name) %>%
+      arrange(project_name) %>%
+      unique()
+
+    for (p in 1:nrow(project)) {
+      figure_project <- planning %>%
+        filter(activity_plan_nickname == activityPlan$activity_plan_nickname[a]) %>%
+        filter(component_name == component$component_name[c]) %>%
+        filter(project_name == project$project_name[p]) %>%
+        mutate(ylab = factor(ylab_project, levels = rev(sort(ylab_project)))) %>%
+        arrange(desc(adjusted_end), ylab) %>%
+        mutate(task_id = paste0("task_", stringr::str_pad(row_number(), 2, pad = "0")))
+
+      fig <- ggplot(figure_project, aes(x = adjusted_start, xend = adjusted_end,
+                                       y = task_id, yend = task_id,
+                                       color = performance_plan_element, alpha = work_intensity)) +
+        geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", linewidth = 1.5) +
+        geom_segment(size = 5) +
+        scale_color_manual(name = "Performance Plan",
+                       values = c("Project lead" = "deeppink4",
+                                  "Elem#1" = "chocolate1",
+                                  "Elem#2" = "darkgoldenrod2",
+                                  "Elem#3" = "darkolivegreen4",
+                                  "Elem#4" = "cadetblue")) +
+        scale_alpha_manual(name = "Work Intensity",
+                       values = c("High" = 1,
+                                  "Moderate" = 0.45,
+                                  "Low" = 0.1,
+                                  "Unknown" = 0)) +
+        scale_x_date(limits = c(Sys.Date() - 31, Sys.Date() + 150),
+             date_labels = "%Y-%m-%d",
+             date_breaks ="1 month") +
+        scale_y_discrete(labels = figure_project$ylab) +
+        labs(title = project$project_name[p],
+             x = "Date",
+             y = "Role") +
+        theme(plot.title.position = "plot") +
+        theme(panel.grid.minor = element_blank()) +
+        theme(axis.text.x = element_text(vjust = 0.5, hjust = 1)) +
+        theme(legend.position = "top", legend.box = "vertical", legend.margin = margin())
+
+      print(fig)
+      cat("\n")
+    }
+  }
+}
+```
+
+
+</details>
+
+# Manuscripts
+
+The following tables list the actions associated with each planned manuscript.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+
+```{r manuscripts, results = "asis"}
+for (m in 1:length(manuscripts)) {
+  cat("\n\n## ", substr(manuscripts[m], 13, nchar(manuscripts[m])), "\n")
+
+  manuscript_subset <- work_manuscripts %>%
+    filter(project_name == manuscripts[m]) %>%
+    select(-project_name) %>%
+    rename("Role" = role_name,
+           "Staff" = staff,
+           "Planned End Date" = planned_end_date,
+           "Status" = role_status)
+
+  print(knitr::kable(manuscript_subset, format = "pipe", padding = 2))
+}
+```
+
+
+</details>
+
+# Reports
+
+The following tables list the actions associated with each planned report.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+
+```{r reports, results = "asis"}
+for (r in 1:length(reports)) {
+   cat("\n\n## ", substr(reports[r], 10, nchar(reports[r])), "\n")
+
+    report_subset <- work_reports %>%
+      filter(project_name == reports[r]) %>%
+      select(-project_name) %>%
+      rename("Role" = role_name,
+             "Staff" = staff,
+             "Planned End Date" = planned_end_date,
+             "Status" = role_status)
+
+    print(knitr::kable(report_subset, format = "pipe", padding = 2))
+  }
+```
+
+
+</details>
+
+# Performance Plan Elements (FY25)
+
+The following tables list the roles for all PEP staff by performance plan element.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+
+```{r elements, results='asis'}
+cat("::: {.panel-tabset}")
+for (p in 1:length(pep)) {
+  peep <- pep[p]
+  cat("\n\n## ", peep, "\n")
+  
+  
+  elements <- work_fy %>%
+    filter(staff == peep) %>%
+    select(pp) %>%
+    unique() %>%
+    arrange(pp) 
+  
+  for (e in 1:nrow(elements)) {
+
+    element <- elements$pp[e]
+    element_text <- paste0("---Element #", element, "---")
+   
+     cat("\n\n### ", 
+        element_text
+        , "\n")
+    
+    project_parents <- work_fy %>%
+      filter(staff == peep,
+             pp == element) %>%
+      select(project_parents) %>%
+      unique() %>%
+      arrange(project_parents)
+    
+    for (c in 1:nrow(project_parents)) {
+      project_parent <- project_parents$project_parents[c]
+      cat("\n#### [", project_parent, "]{.ul}\n")
+      
+      projects <- work_fy %>%
+      filter(staff == peep,
+             pp == element,
+             project_parents == project_parent) %>%
+      select(project_name) %>%
+      unique() %>%
+      arrange(project_name)
+      
+      for (j in 1:nrow(projects)) {
+        project <- projects$project_name[j]
+        cat("\n##### .. ", project, "\n")
+        
+        if(element > 0) {
+          roles <- work_fy %>%
+            filter(staff == peep,
+                   pp == element,
+                   project_parents == project_parent, 
+                   project_name == project) %>%
+            select(performance_plan_element, role_name) %>%
+            unique() %>%
+            arrange(performance_plan_element, role_name)
+      
+          for (r in 1:nrow(roles)) {
+            cat("\n###### .. .. ", roles$role_name[r], "\n")
+            }
+          }
+        }
+    }
+  }
+}
+cat(":::")
+```
+
+
+</details>
+
