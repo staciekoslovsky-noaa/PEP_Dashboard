@@ -61,7 +61,8 @@ reports <- unique(work_reports$project_name)
 work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_fy") %>%
   mutate(pp = ifelse(performance_plan_element == 0, project_pp_element, performance_plan_element)) %>%
   filter(!is.na(pp)) %>%
-  mutate(performance_plan_element = factor(performance_plan_element, levels = c(1, 2, 3, 4), labels=c("Element 1", "Element 2", "Element 3", "Element 4"), ordered = TRUE))
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(1, 2, 3, 4, 5), 
+                                           labels=c("Element 1", "Element 2", "Element 3", "Element 4", "Element 5"), ordered = TRUE))
 
 RPostgreSQL::dbDisconnect(con)
 due_soon <- work %>%
@@ -87,7 +88,8 @@ planning <- work %>%
          ylab_staff = str_wrap(paste(project_activity, role_name, sep = ": "), width = 75),
          ylab_project = str_wrap(paste0(project_activity,": ", role_name, " (", staff, ")"), width = 75),
          work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
-  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4), labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4"), ordered = TRUE)) %>%
+  mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4, 5), 
+                                           labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4", "Elem5"), ordered = TRUE)) %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
   mutate(duration = adjusted_end - adjusted_start)
            
@@ -215,7 +217,7 @@ for (i in 1:length(pep)) {
 
   figure_staff <- planning %>%
     filter(staff == pep[i]) %>% 
-    filter(!(duration == 180 & work_intensity == 'Low')) %>%
+    filter(!(duration >= 180 & work_intensity == 'Low')) %>%
     mutate(ylab = factor(ylab_staff, levels = rev(sort(ylab_staff)))) %>%
     arrange(project_activity, adjusted_end)
 
@@ -228,7 +230,8 @@ for (i in 1:length(pep)) {
                                   "Elem#1" = "chocolate1",
                                   "Elem#2" = "darkgoldenrod2",
                                   "Elem#3" = "darkolivegreen4",
-                                  "Elem#4" = "cadetblue")) +
+                                  "Elem#4" = "cadetblue",
+                                  "Elem#5" = "orchid4")) +
     scale_alpha_manual(name = "Work Intensity",
                        values = c("High" = 1,
                                   "Moderate" = 0.45,
@@ -378,7 +381,7 @@ for (r in 1:length(reports)) {
 
 </details>
 
-# Performance Plan Elements (FY25)
+# Performance Plan Elements (FY26)
 
 The following tables list the roles for all PEP staff by performance plan element.
 
