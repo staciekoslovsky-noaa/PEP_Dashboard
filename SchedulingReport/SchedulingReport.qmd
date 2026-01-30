@@ -439,16 +439,21 @@ for (p in 1:length(pep)) {
             filter(staff == peep,
                    pp == element,
                    project_parents == project_parent, 
-                   project_name == project) %>%
-            select(performance_plan_element, role_name) %>%
-            unique() %>%
-            arrange(performance_plan_element, role_name)
-      
-          for (r in 1:nrow(roles)) {
-            cat("\n###### .. .. ", roles$role_name[r], "\n")
+                   project_name == project,
+                   role_name != 'Component lead') 
+          
+          if (nrow(roles) > 0) {
+            roles <- roles %>%
+              select(performance_plan_element, role_name) %>%
+              unique() %>%
+              arrange(performance_plan_element, role_name)
+            
+            for (r in 1:nrow(roles)) {
+              cat("\n###### .. .. ", roles$role_name[r], "\n")
             }
           }
         }
+      }
     }
   }
 }
