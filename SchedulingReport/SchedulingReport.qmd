@@ -22,7 +22,25 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
                               user = Sys.getenv("pep_admin"), 
                               password =  Sys.getenv("admin_pw"))
 
-qaqc <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qaqc_roles_missing_info")%>%
+priorities <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qry_project_priorities") 
+
+p_critical <- priorities %>%
+  filter(project_priority == "Mission Critical") %>%
+  select(-project_priority) %>%
+  arrange(activity_plan_nickname, project_name) %>%
+  rename("Activity Plan" = activity_plan_nickname,
+         "Project" = project_name,
+         "Status" = project_status)
+
+p_high <- priorities %>%
+  filter(project_priority == "High Priority") %>%
+  select(-project_priority) %>%
+  arrange(activity_plan_nickname, project_name) %>%
+  rename("Activity Plan" = activity_plan_nickname,
+         "Project" = project_name,
+         "Status" = project_status)
+
+qaqc <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qaqc_roles_missing_info") %>%
   rename("Staff" = last_name,
          "# Missing Info" = num_missing_info)
 
@@ -107,6 +125,20 @@ This report was generated on `r Sys.Date()`.
 # Introduction
 
 The information in this report represents the outstanding and upcoming work for PEP staff over the next 180 days. The intent of this information is to help support cross-project planning and communication.
+
+# Project Priorities
+
+::: panel-tabset
+## Mission Critical Projects
+```{r mission_critical, results='asis'}
+knitr::kable(p_critical, format = "pipe", padding = 2)
+```
+
+## High Priority Projects
+```{r high_priority, results='asis'}
+knitr::kable(p_high, format = "pipe", padding = 2)
+```
+:::
 
 # Roles Missing Info
 
