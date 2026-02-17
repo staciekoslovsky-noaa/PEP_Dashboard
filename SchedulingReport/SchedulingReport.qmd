@@ -128,6 +128,12 @@ The information in this report represents the outstanding and upcoming work for 
 
 # Project Priorities
 
+The following tables list projects by their priority level.
+
+<details>
+
+<summary>Click to Expand</summary>
+
 ::: panel-tabset
 ## Mission Critical Projects
 ```{r mission_critical, results='asis'}
@@ -139,6 +145,8 @@ knitr::kable(p_critical, format = "pipe", padding = 2)
 knitr::kable(p_high, format = "pipe", padding = 2)
 ```
 :::
+
+</details>
 
 # Roles Missing Info
 
@@ -363,7 +371,7 @@ for (a in 1:nrow(activityPlan)) {
 
 # Manuscripts
 
-The following tables list the actions associated with each planned manuscript.
+The following tables list the actions associated with each planned manuscript. Asterisks at the end of each role indicate project priority (one asterisk = mission critical work; two asterisks = high priority work).
 
 <details>
 
