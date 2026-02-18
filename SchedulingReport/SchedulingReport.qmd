@@ -109,6 +109,7 @@ planning <- work %>%
   mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4, 5), 
                                            labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4", "Elem5"), ordered = TRUE)) %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+  mutate(project_priority = factor(project_priority, levels=c("Mission Critical", "High Priority", "X", "Unknown"), ordered = TRUE)) %>%
   mutate(duration = adjusted_end - adjusted_start)
            
 
@@ -262,7 +263,7 @@ for (i in 1:length(pep)) {
     arrange(project_activity, adjusted_end)
 
   fig <- ggplot(figure_staff, aes(x = adjusted_start, xend = adjusted_end, y = ylab, yend = ylab,
-                                  color = performance_plan_element, alpha = work_intensity)) +
+                                  color = performance_plan_element, alpha = project_priority)) +
     geom_vline(aes(xintercept = Sys.Date()), col = "darkgray", linewidth = 1.5) +
     geom_segment(size = 5) +
     scale_color_manual(name = "Performance Plan",
@@ -272,11 +273,16 @@ for (i in 1:length(pep)) {
                                   "Elem#3" = "darkolivegreen4",
                                   "Elem#4" = "cadetblue",
                                   "Elem#5" = "orchid4")) +
-    scale_alpha_manual(name = "Work Intensity",
-                       values = c("High" = 1,
-                                  "Moderate" = 0.45,
-                                  "Low" = 0.1,
+      scale_alpha_manual(name = "Project Priority",
+                       values = c("Mission Critical" = 1,
+                                  "High Priority" = 0.45,
+                                  "X" = 0.1,
                                   "Unknown" = 0)) +
+    # scale_alpha_manual(name = "Work Intensity", # Using work intensity field
+    #                    values = c("High" = 1,
+    #                               "Moderate" = 0.45,
+    #                               "Low" = 0.1,
+    #                               "Unknown" = 0)) +
     scale_x_date(limits = c(Sys.Date() - 30, Sys.Date() + 150),
                  date_labels = "%Y-%m-%d",
                  date_breaks ="1 month") +
