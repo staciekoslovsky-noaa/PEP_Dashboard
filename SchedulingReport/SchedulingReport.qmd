@@ -46,29 +46,29 @@ qaqc <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.qaqc_roles_mi
 
 work <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling") 
 
-work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
-  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
-  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles == 1, "1", 
-                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
-                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
-                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
-  
-work30 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_30days") %>%
-  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
-  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles == 1, "1", 
-                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
-                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
-                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
-
-work90 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_90days") %>%
-  mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
-  mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(num_roles = ifelse(num_roles == 1, "1", 
-                            ifelse(num_roles == 2 | num_roles == 3, "2-3",
-                                   ifelse(num_roles >=4 & num_roles <= 5, "4-5",
-                                          ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+# work00 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_00days") %>%
+#   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+#   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+#   mutate(num_roles = ifelse(num_roles == 1, "1", 
+#                             ifelse(num_roles == 2 | num_roles == 3, "2-3",
+#                                    ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+#                                           ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+#   
+# work30 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_30days") %>%
+#   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+#   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+#   mutate(num_roles = ifelse(num_roles == 1, "1", 
+#                             ifelse(num_roles == 2 | num_roles == 3, "2-3",
+#                                    ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+#                                           ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
+# 
+# work90 <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_90days") %>%
+#   mutate(work_intensity = ifelse(is.na(work_intensity), "Unknown", work_intensity))  %>%
+#   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
+#   mutate(num_roles = ifelse(num_roles == 1, "1", 
+#                             ifelse(num_roles == 2 | num_roles == 3, "2-3",
+#                                    ifelse(num_roles >=4 & num_roles <= 5, "4-5",
+#                                           ifelse(num_roles >= 6 & num_roles <= 8, "6-8", "9+")))))
 
 work_manuscripts <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4scheduling_manuscripts") 
 manuscripts <- unique(work_manuscripts$project_name) 
@@ -81,6 +81,9 @@ work_fy <- RPostgreSQL::dbGetQuery(con, "SELECT * FROM administrative.summ_4sche
   filter(!is.na(pp)) %>%
   mutate(performance_plan_element = factor(performance_plan_element, levels = c(1, 2, 3, 4, 5), 
                                            labels=c("Element 1", "Element 2", "Element 3", "Element 4", "Element 5"), ordered = TRUE))
+
+work_fy_priorities <- work_fy %>%
+  filter(project_priority != 'Other')
 
 RPostgreSQL::dbDisconnect(con)
 due_soon <- work %>%
@@ -109,7 +112,7 @@ planning <- work %>%
   mutate(performance_plan_element = factor(performance_plan_element, levels = c(0, 1, 2, 3, 4, 5), 
                                            labels=c("Project lead", "Elem#1", "Elem#2", "Elem#3", "Elem#4", "Elem5"), ordered = TRUE)) %>%
   mutate(work_intensity = factor(work_intensity, levels=c("High", "Moderate", "Low", "Unknown"), ordered = TRUE)) %>%
-  mutate(project_priority = factor(project_priority, levels=c("Mission Critical", "High Priority", "X", "Unknown"), ordered = TRUE)) %>%
+  mutate(project_priority = factor(project_priority, levels=c("Mission Critical", "High Priority", "Other", "Unknown"), ordered = TRUE)) %>%
   mutate(duration = adjusted_end - adjusted_start)
            
 
@@ -191,59 +194,59 @@ if (nrow(overdue) == 0) {
 }
 ```
 
-# Potential Bottlenecks
+<!-- # Potential Bottlenecks -->
 
-The following figures display the number of roles by work intensity by staff for this week, in the next 30 days and in the next 90 days.
+<!-- The following figures display the number of roles by work intensity by staff for this week, in the next 30 days and in the next 90 days. -->
 
-::: panel-tabset
-## This Week
+<!-- ::: panel-tabset -->
+<!-- ## This Week -->
 
-```{r bottleneck00}
-ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) +
-  geom_tile() +
-  scale_fill_manual("# Roles",
-                    values = c("1" = "darkolivegreen3",
-                                  "2-3" = "gold",
-                                  "4-5" = "darkorange3",
-                                  "6-8" = "firebrick4",
-                                  "9+" = "orchid4")) +
-  labs(title = "# of Roles by Intensity - This Week",
-     x = "Work Intensity",
-     y = "Staff")
-```
+<!-- ```{r bottleneck00} -->
+<!-- ggplot(work00, aes(work_intensity, ordered(staff), fill = num_roles)) + -->
+<!--   geom_tile() + -->
+<!--   scale_fill_manual("# Roles", -->
+<!--                     values = c("1" = "darkolivegreen3", -->
+<!--                                   "2-3" = "gold", -->
+<!--                                   "4-5" = "darkorange3", -->
+<!--                                   "6-8" = "firebrick4", -->
+<!--                                   "9+" = "orchid4")) + -->
+<!--   labs(title = "# of Roles by Intensity - This Week", -->
+<!--      x = "Work Intensity", -->
+<!--      y = "Staff") -->
+<!-- ``` -->
 
-## Next 30 Days
+<!-- ## Next 30 Days -->
 
-```{r bottleneck30}
-ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) +
-  geom_tile() +
-  scale_fill_manual("# Roles",
-                    values = c("1" = "darkolivegreen3",
-                                  "2-3" = "gold",
-                                  "4-5" = "darkorange3",
-                                  "6-8" = "firebrick4",
-                                  "9+" = "orchid4")) +
-  labs(title = "# of Roles by Intensity - 30 Days",
-     x = "Work Intensity",
-     y = "Staff")
-```
+<!-- ```{r bottleneck30} -->
+<!-- ggplot(work30, aes(work_intensity, ordered(staff), fill = num_roles)) + -->
+<!--   geom_tile() + -->
+<!--   scale_fill_manual("# Roles", -->
+<!--                     values = c("1" = "darkolivegreen3", -->
+<!--                                   "2-3" = "gold", -->
+<!--                                   "4-5" = "darkorange3", -->
+<!--                                   "6-8" = "firebrick4", -->
+<!--                                   "9+" = "orchid4")) + -->
+<!--   labs(title = "# of Roles by Intensity - 30 Days", -->
+<!--      x = "Work Intensity", -->
+<!--      y = "Staff") -->
+<!-- ``` -->
 
-## Next 90 Days
+<!-- ## Next 90 Days -->
 
-```{r bottleneck90}
-ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) +
-  geom_tile() +
-  scale_fill_manual("# Roles",
-                    values = c("1" = "darkolivegreen3",
-                                  "2-3" = "gold",
-                                  "4-5" = "darkorange3",
-                                  "6-8" = "firebrick4",
-                                  "9+" = "orchid4")) +
-  labs(title = "# of Roles by Intensity - 90 Days",
-     x = "Work Intensity",
-     y = "Staff")
-```
-:::
+<!-- ```{r bottleneck90} -->
+<!-- ggplot(work90, aes(work_intensity, ordered(staff), fill = num_roles)) + -->
+<!--   geom_tile() + -->
+<!--   scale_fill_manual("# Roles", -->
+<!--                     values = c("1" = "darkolivegreen3", -->
+<!--                                   "2-3" = "gold", -->
+<!--                                   "4-5" = "darkorange3", -->
+<!--                                   "6-8" = "firebrick4", -->
+<!--                                   "9+" = "orchid4")) + -->
+<!--   labs(title = "# of Roles by Intensity - 90 Days", -->
+<!--      x = "Work Intensity", -->
+<!--      y = "Staff") -->
+<!-- ``` -->
+<!-- ::: -->
 
 # Planned Work by PEP Staff
 
@@ -507,3 +510,85 @@ cat(":::")
 ```
 
 </details>
+
+# Prioritized Performance Plan Elements (FY26)
+
+The following tables list the roles associated with Mission Critical or Top Priority projects for all PEP staff by performance plan element.
+
+<details>
+
+<summary>Click to Expand</summary>
+
+```{r element_priorities, results='asis'}
+cat("::: {.panel-tabset}")
+for (p in 1:length(pep)) {
+  peep <- pep[p]
+  cat("\n\n## ", peep, "\n")
+  
+  
+  elements <- work_fy_priorities %>%
+    filter(staff == peep) %>%
+    select(pp) %>%
+    unique() %>%
+    arrange(pp) 
+  
+  for (e in 1:nrow(elements)) {
+
+    element <- elements$pp[e]
+    element_text <- paste0("---Element #", element, "---")
+   
+     cat("\n\n### ", 
+        element_text
+        , "\n")
+    
+    project_parents <- work_fy_priorities %>%
+      filter(staff == peep,
+             pp == element) %>%
+      select(project_parents) %>%
+      unique() %>%
+      arrange(project_parents)
+    
+    for (c in 1:nrow(project_parents)) {
+      project_parent <- project_parents$project_parents[c]
+      cat("\n#### [", project_parent, "]{.ul}\n")
+      
+      projects <- work_fy %>%
+      filter(staff == peep,
+             pp == element,
+             project_parents == project_parent) %>%
+      select(project_name) %>%
+      unique() %>%
+      arrange(project_name)
+      
+      for (j in 1:nrow(projects)) {
+        project <- projects$project_name[j]
+        cat("\n##### .. ", project, "\n")
+        
+        if(element > 0) {
+          roles <- work_fy_priorities %>%
+            filter(staff == peep,
+                   pp == element,
+                   project_parents == project_parent, 
+                   project_name == project,
+                   role_name != 'Component lead') 
+          
+          if (nrow(roles) > 0) {
+            roles <- roles %>%
+              select(performance_plan_element, role_name) %>%
+              unique() %>%
+              arrange(performance_plan_element, role_name)
+            
+            for (r in 1:nrow(roles)) {
+              cat("\n###### .. .. ", roles$role_name[r], "\n")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+cat(":::")
+```
+
+</details>
+
