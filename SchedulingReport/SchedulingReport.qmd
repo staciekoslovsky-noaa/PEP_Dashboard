@@ -430,7 +430,7 @@ for (r in 1:length(reports)) {
 
 </details>
 
-# Performance Plan Elements (FY26)
+# Plan Elements (FY26)
 
 The following tables list the roles for all PEP staff by performance plan element.
 
@@ -511,7 +511,7 @@ cat(":::")
 
 </details>
 
-# Prioritized Performance Plan Elements (FY26)
+# Prioritized Elements (FY26)
 
 The following tables list the roles associated with Mission Critical or Top Priority projects for all PEP staff by performance plan element.
 
@@ -552,8 +552,8 @@ for (p in 1:length(pep)) {
       project_parent <- project_parents$project_parents[c]
       cat("\n#### [", project_parent, "]{.ul}\n")
       
-      projects <- work_fy %>%
-      filter(staff == peep,
+      projects <- work_fy_priorities %>%
+        filter(staff == peep,
              pp == element,
              project_parents == project_parent) %>%
       select(project_name) %>%
