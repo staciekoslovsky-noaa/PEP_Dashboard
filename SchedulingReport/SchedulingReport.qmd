@@ -279,7 +279,7 @@ for (i in 1:length(pep)) {
       scale_alpha_manual(name = "Project Priority",
                        values = c("Mission Critical" = 1,
                                   "High Priority" = 0.45,
-                                  "X" = 0.1,
+                                  "Other" = 0.1,
                                   "Unknown" = 0)) +
     # scale_alpha_manual(name = "Work Intensity", # Using work intensity field
     #                    values = c("High" = 1,
